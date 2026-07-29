@@ -147,11 +147,11 @@
     </div>
     
     <div class="nav-group">
-      <a href="/dashboard" class="nav-item active">
+      <a href={{ route('admin.dashboard') }} class="nav-item active">
         <span class="icon">■</span> Ringkasan
       </a>
       <!-- Contoh Navigasi ke Kelas -->
-      <a href="/kelas" class="nav-item">
+      <a href={{ route('admin.kelas.index') }} class="nav-item">
         <span class="icon">▤</span> Data Kelas
       </a>
       <a href="/ruangan" class="nav-item">

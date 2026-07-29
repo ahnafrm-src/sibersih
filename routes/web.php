@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\KelasController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,4 +17,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     })->name('dashboard');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+    //kelas
+    Route::resource('kelas', KelasController::class);
 });
