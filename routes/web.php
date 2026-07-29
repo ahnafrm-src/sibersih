@@ -7,5 +7,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('login', [AuthController::class, 'showLogin']);
-Route::post('login', [AuthController::class, 'login'])->name('admin.login');
+Route::get('login', [AuthController::class, 'showLogin'])->name('admin.login')->middleware('guest.auth');
+Route::post('login', [AuthController::class, 'login']);
+
+Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function () {
+    route::get('/', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+});

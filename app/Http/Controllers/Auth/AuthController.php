@@ -23,11 +23,20 @@ class AuthController extends Controller
         if(Auth::attempt($credentials)){
             $request->session()->regenerate();
 
-            return view('admin.dashboard');
+            return redirect()->route('admin.dashboard');
         }
 
         return back()->withErrors([
             'email' => 'Email atau Password salah'
         ])->onlyInput('email');
+    }
+
+    public function logout(Request $request) {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('admin.login');
     }
 }
