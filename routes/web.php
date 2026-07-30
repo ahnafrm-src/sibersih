@@ -5,7 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\KelasController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('admin.login');
 });
 
 Route::get('login', [AuthController::class, 'showLogin'])->name('admin.login')->middleware('guest.auth');
