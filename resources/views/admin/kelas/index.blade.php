@@ -73,7 +73,6 @@
 
         .table-header {
             display: grid;
-            grid-template-columns: 140px 1fr 60px 100px;
             gap: 12px;
             padding-bottom: 10px;
             border-bottom: 1px solid var(--line);
@@ -85,12 +84,16 @@
 
         .row-item {
             display: grid;
-            grid-template-columns: 140px 1fr 60px 100px;
             gap: 12px;
             align-items: center;
             padding: 14px 0;
             border-top: 1px solid var(--line);
             font-size: 13px;
+        }
+
+        .table-header,
+        .row-item {
+            grid-template-columns: 140px 1fr 60px 100px;
         }
 
         .row-item:first-of-type {
@@ -176,7 +179,8 @@
                 <div class="table-header">
                     <div>Nama Kelas</div>
                     <div>Performa Kebersihan</div>
-                    <div style="text-align:right;">Aksi</div>
+                    <div style="text-align:left;">Skor</div>
+                    <div>Aksi</div>
                 </div>
 
                 @forelse($data_kelas as $kelas)
@@ -199,8 +203,14 @@
                             </div>
                         </div>
                         <div class="score-val">{{ $nilaiSkor !== null ? $nilaiSkor . '%' : '—' }}</div>
-                        <div style="text-align:right;">
+                        <div style="text-align:right;text-align:right; display:flex; gap:8px; justify-content:flex-end;">
                             <a href="{{ route('admin.kelas.edit', $kelas->id) }}" class="btn-ghost">Edit</a>
+                            <form action="{{ route('admin.kelas.destroy', $kelas->id) }}" method="POST"
+                                onsubmit="return confirm('Yakin hapus kelas {{ $kelas->nama_kelas }}?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-ghost">Delete</button>
+                            </form>
                         </div>
                     </div>
                 @empty
