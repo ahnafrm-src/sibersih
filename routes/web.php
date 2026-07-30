@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\KelasController;
+use App\Http\Controllers\Admin\RuanganController;
 
 Route::get('/', function () {
     return view('admin.login');
@@ -20,4 +21,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
 
     //kelas
     Route::resource('kelas', KelasController::class);
+
+    //ruangan
+    Route::resource('ruangan', RuanganController::class);
 });
