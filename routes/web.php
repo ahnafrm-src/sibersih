@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\KelasController;
+use App\Http\Controllers\Admin\RuanganController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,5 +20,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
     //kelas
-    Route::resource('kelas', KelasController::class)->parameters(['kelas' => 'kelas']);
+    Route::resource('kelas', KelasController::class);
+
+    //ruangan
+    Route::resource('ruangan', RuanganController::class);
 });
