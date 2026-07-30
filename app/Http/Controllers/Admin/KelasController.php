@@ -33,6 +33,13 @@ class KelasController extends Controller
     public function store(Request $request)
     {
         //
+        $validated = $request->validate([
+            'nama_kelas' => 'required|'
+        ]);
+
+        Kelas::create($validated);
+
+        return redirect()->route('admin.kelas.index');
     }
 
     /**
