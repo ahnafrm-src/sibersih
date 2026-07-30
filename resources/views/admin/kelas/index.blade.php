@@ -3,6 +3,42 @@
 
 @section('content')
     <style>
+        /* Notifikasi Sukses */
+        .alert-success {
+            background: #E8F5E9;
+            /* Background hijau lembut */
+            border: 1px solid var(--green);
+            color: #1B5E20;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-family: var(--sans);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alert-success strong {
+            font-weight: 600;
+        }
+
+        .alert-close {
+            background: transparent;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1;
+            padding: 0 4px;
+            opacity: 0.6;
+        }
+
+        .alert-close:hover {
+            opacity: 1;
+        }
+
         /* Tombol */
         .btn-primary {
             background: var(--green);
@@ -148,7 +184,60 @@
             color: var(--ink-soft);
             font-size: 13px;
         }
+
+        /* Inline Edit Mode */
+        .row-item.is-editing .view-mode {
+            display: none;
+        }
+
+        .row-item .edit-mode {
+            display: none;
+        }
+
+        .row-item.is-editing .edit-mode {
+            display: grid;
+            grid-column: 1 / -1;
+            grid-template-columns: 140px 1fr 60px 100px;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .edit-input {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 13px;
+            color: var(--ink);
+            font-family: var(--sans);
+            width: 100%;
+        }
+
+        .btn-save {
+            background: var(--green);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: var(--sans);
+        }
+
+        .actions-view {
+            text-align: right;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
     </style>
+
+    @if (session('success'))
+        <div class="alert-success" id="success-alert">
+            <span><strong>Sukses!</strong> {{ session('success') }}</span>
+            <button type="button" class="alert-close" onclick="document.getElementById('success-alert').remove()">×</button>
+        </div>
+    @endif
 
     <div class="page-header">
         <h2>Manajemen Kelas</h2>
@@ -188,11 +277,13 @@
                         $skorTerbaru = $kelas->skorMingguan()->latest()->first();
                         $nilaiSkor = $skorTerbaru->skor ?? null;
                     @endphp
-                    <div class="row-item">
-                        <div>
+                    <div class="row-item" id="row-{{ $kelas->id }}">
+
+                        <!-- ===== VIEW MODE ===== -->
+                        <div class="view-mode">
                             <div class="cls-name">{{ $kelas->nama_kelas }}</div>
                         </div>
-                        <div class="score-container">
+                        <div class="view-mode score-container">
                             <div class="score-bar-bg">
                                 @if (is_null($nilaiSkor))
                                     <div class="score-bar-fill" style="width: 0%;"></div>
@@ -202,9 +293,10 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="score-val">{{ $nilaiSkor !== null ? $nilaiSkor . '%' : '—' }}</div>
-                        <div style="text-align:right;text-align:right; display:flex; gap:8px; justify-content:flex-end;">
-                            <a href="{{ route('admin.kelas.edit', $kelas->id) }}" class="btn-ghost">Edit</a>
+                        <div class="view-mode score-val">{{ $nilaiSkor !== null ? $nilaiSkor . '%' : '—' }}</div>
+                        <div class="view-mode actions-view">
+                            <button type="button" class="btn-ghost"
+                                onclick="toggleEdit({{ $kelas->id }}, true)">Edit</button>
                             <form action="{{ route('admin.kelas.destroy', $kelas->id) }}" method="POST"
                                 onsubmit="return confirm('Yakin hapus kelas {{ $kelas->nama_kelas }}?')">
                                 @csrf
@@ -212,6 +304,24 @@
                                 <button type="submit" class="btn-ghost">Delete</button>
                             </form>
                         </div>
+
+                        <!-- ===== EDIT MODE ===== -->
+                        <form class="edit-mode" action="{{ route('admin.kelas.update', $kelas->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div>
+                                <input type="text" name="nama_kelas" class="edit-input" value="{{ $kelas->nama_kelas }}"
+                                    required>
+                            </div>
+                            <div></div>
+                            <div></div>
+                            <div style="display:flex; gap:8px; justify-content:flex-end;">
+                                <button type="button" class="btn-ghost"
+                                    onclick="toggleEdit({{ $kelas->id }}, false)">Batal</button>
+                                <button type="submit" class="btn-save">Simpan</button>
+                            </div>
+                        </form>
+
                     </div>
                 @empty
                     <div class="empty-state">Belum ada data kelas yang tersimpan di database.</div>
@@ -219,4 +329,11 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleEdit(id, isEditing) {
+            const row = document.getElementById('row-' + id);
+            row.classList.toggle('is-editing', isEditing);
+        }
+    </script>
 @endsection

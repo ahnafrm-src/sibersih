@@ -39,7 +39,7 @@ class KelasController extends Controller
 
         Kelas::create($validated);
 
-        return redirect()->route('admin.kelas.index');
+        return redirect()->route('admin.kelas.index')->with('success', 'Kelas berhasil ditambahkan');
     }
 
     /**
@@ -64,6 +64,13 @@ class KelasController extends Controller
     public function update(Request $request, Kelas $kelas)
     {
         //
+        $validated = $request->validate([
+            'nama_kelas' => 'required|'
+        ]);
+
+        $kelas->update($validated);
+
+        return redirect()->route('admin.kelas.index')->with('success', 'Kelas berhasil diupdate');
     }
 
     /**
