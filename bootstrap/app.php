@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.auth' => \App\Http\Middleware\AuthLogin::class,
             'guest.auth' => \App\Http\Middleware\AuthGuest::class,
         ]);
+        $middleware->web(append: [
+        \App\Http\Middleware\PreventBackHistory::class,
+    ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

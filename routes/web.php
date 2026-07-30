@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\RuanganController;
+use App\Http\Controllers\Admin\Dashboard;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,9 +14,7 @@ Route::get('login', [AuthController::class, 'showLogin'])->name('admin.login')->
 Route::post('login', [AuthController::class, 'login'])->name('admin.login');
 
 Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function () {
-    route::get('/', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    route::get('/', [Dashboard::class, 'index'])->name('dashboard');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
