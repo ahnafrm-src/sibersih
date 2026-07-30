@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://googleapis.com">
 <link href="https://googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  {{-- semua CSS kamu taruh di sini, tidak perlu diulang di tiap halaman --}}
+  /* {{-- semua CSS kamu taruh di sini, tidak perlu diulang di tiap halaman --}} */
   
   :root{
     --bg: #EEF2ED;
@@ -155,7 +155,7 @@
       <a href="{{ route('admin.kelas.index') }}" class="nav-item {{ request()->routeIs('admin.kelas.*') ? 'active' : '' }}">
         <span class="icon">▤</span> Data Kelas
       </a>
-      <a href="/ruangan" class="nav-item">
+      <a href="{{ route('admin.ruangan.index') }}" class="nav-item">
         <span class="icon">☖</span> Data Ruangan
       </a>
       <a href="/laporan" class="nav-item">
