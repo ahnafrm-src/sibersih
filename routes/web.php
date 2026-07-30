@@ -5,11 +5,11 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\KelasController;
 
 Route::get('/', function () {
-    return view('admin.login');
+    return view('welcome');
 });
 
 Route::get('login', [AuthController::class, 'showLogin'])->name('admin.login')->middleware('guest.auth');
-Route::post('login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login'])->name('admin.login');
 
 Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function () {
     route::get('/', function () {
