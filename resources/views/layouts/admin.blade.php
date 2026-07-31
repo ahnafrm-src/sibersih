@@ -159,7 +159,7 @@
         <span class="icon">☖</span> Data Ruangan
       </a>
       <a href="{{ route('admin.jadwal-pelajaran.index') }}" class="nav-item">
-        <span class="icon">☖</span> Data Jadwal Pelajaran
+        <span class="icon">📅</span> Data Jadwal Pelajaran
       </a>
       <a href="/laporan" class="nav-item">
         <span class="icon">▲</span> Semua Laporan
