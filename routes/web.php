@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\RuanganController;
 use App\Http\Controllers\Admin\Dashboard;
+use App\Http\Controllers\Admin\JadwalPelajaranController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,8 +20,11 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
     //kelas
-    Route::resource('kelas', KelasController::class);
+    Route::resource('kelas', KelasController::class)->parameters(['kelas' => 'kelas']);
 
     //ruangan
     Route::resource('ruangan', RuanganController::class);
+
+    //jadwal pelajaran
+    Route::resource('jadwal-pelajaran', JadwalPelajaranController::class);  
 });
