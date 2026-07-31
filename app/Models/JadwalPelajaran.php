@@ -11,11 +11,18 @@ class JadwalPelajaran extends Model
 
     protected $fillable = ['ruangan_id', 'kelas_id', 'hari', 'jam_mulai', 'jam_selesai'];
 
-    public function Ruangan(){
+    protected $casts = [
+        'jam_mulai' => 'datetime',
+        'jam_selesai' => 'datetime',
+    ];
+
+    public function Ruangan()
+    {
         return $this->belongsTo(Ruangan::class, 'ruangan_id');
     }
 
-    public function Kelas(){
+    public function Kelas()
+    {
         return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 }

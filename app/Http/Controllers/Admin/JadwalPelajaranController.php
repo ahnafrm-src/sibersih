@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\JadwalPelajaran;
+use App\Models\Kelas;
+use App\Models\Ruangan;
 use Illuminate\Http\Request;
 
 class JadwalPelajaranController extends Controller
@@ -11,12 +13,21 @@ class JadwalPelajaranController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         //
-        $jadwalPelajaran = JadwalPelajaran::with(['Ruangan', 'Kelas'])->get();
+        $query = JadwalPelajaran::with(['Kelas', 'Ruangan']);
 
-        return view('admin.jadwalPelajaran.index');
+        if($request->filled('kelas_id')){
+            $query->whereHas('Kelas', function ($query) use ($request){
+                return $query->where('id', $request->kelas_id);
+            });
+        }
+
+        $listKelas = Kelas::all();
+        $jadwalPelajaran = $query->get();
+
+        return view('admin.jadwal-pelajaran.index', compact('jadwalPelajaran', 'listKelas'));
     }
 
     /**
@@ -25,6 +36,10 @@ class JadwalPelajaranController extends Controller
     public function create()
     {
         //
+        $listKelas = Kelas::all();
+        $listRuangan = Ruangan::all();
+
+        return view('admin.jadwal-pelajaran.create', compact('listKelas', 'listRuangan'));
     }
 
     /**
