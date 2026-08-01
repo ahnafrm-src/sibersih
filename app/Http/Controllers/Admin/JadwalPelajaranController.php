@@ -48,6 +48,17 @@ class JadwalPelajaranController extends Controller
     public function store(Request $request)
     {
         //
+        $validated = $request->validate([
+            'ruangan_id' => 'required',
+            'kelas_id' => 'required',
+            'hari' => 'required|string',
+            'jam_mulai' => 'required|after_or_equal:06:45|before_or_equal:15:00',
+            'jam_selesai' => 'required|after:jam_mulai|after_or_equal:06:45|before_or_equal:15:00'
+        ]);
+
+        JadwalPelajaran::create($validated);
+
+        return redirect()->route('admin.jadwal-pelajaran.index')->with('success', 'Jadwal pelajaran berhasil dibuat');
     }
 
     /**

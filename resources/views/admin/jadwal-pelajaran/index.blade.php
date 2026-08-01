@@ -194,7 +194,49 @@
         margin: 0;
         font-size: 14px;
     }
+
+    .alert-success {
+            background: #E8F5E9;
+            /* Background hijau lembut */
+            border: 1px solid var(--green);
+            color: #1B5E20;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-family: var(--sans);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alert-success strong {
+            font-weight: 600;
+        }
+
+        .alert-close {
+            background: transparent;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1;
+            padding: 0 4px;
+            opacity: 0.6;
+        }
+
+        .alert-close:hover {
+            opacity: 1;
+        }
 </style>
+
+    @if (session('success'))
+        <div class="alert-success" id="success-alert">
+            <span><strong>Sukses!</strong> {{ session('success') }}</span>
+            <button type="button" class="alert-close" onclick="document.getElementById('success-alert').remove()">×</button>
+        </div>
+    @endif
 
 <div class="page-header">
     <h2>Jadwal Pelajaran</h2>
