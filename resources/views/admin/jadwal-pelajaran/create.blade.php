@@ -1,207 +1,192 @@
-@extends('layouts.admin') {{-- Sesuaikan dengan nama layout utama Anda --}}
+{{-- resources/views/admin/jadwal-pelajaran/create.blade.php --}}
+@extends('layouts.app')
 
 @section('title', 'Tambah Jadwal Pelajaran')
 
 @section('content')
-<style>
-    /* Styling Khusus Form Grid SI-BERSIH */
-    .form-container {
-        max-width: 680px;
-    }
 
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-bottom: 20px;
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
-
-    .form-label {
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: .06em;
-        text-transform: uppercase;
-        color: var(--ink-soft);
-        font-weight: 600;
-    }
-
-    .form-control, .form-select {
-        background-color: var(--card);
-        border: 1px solid var(--line);
-        color: var(--ink);
-        padding: 10px 14px;
-        border-radius: 8px;
-        font-family: var(--sans);
-        font-size: 14px;
-        outline: none;
-        width: 100%;
-        transition: all 0.2s;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: var(--green);
-        background-color: #FBFAF7;
-    }
-
-    /* Group Tombol Aksi */
-    .btn-group {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        margin-top: 32px;
-        padding-top: 20px;
-        border-top: 1px solid var(--line);
-    }
-
-    .btn-primary {
-        background: var(--green);
-        color: #FFFFFF;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        font-family: var(--sans);
-        transition: opacity 0.2s;
-    }
-    
-    .btn-primary:hover {
-        opacity: 0.9;
-    }
-
-    .btn-secondary {
-        border: 1px solid var(--line);
-        background: transparent;
-        color: var(--ink-soft);
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        font-family: var(--sans);
-        text-decoration: none;
-        text-align: center;
-        transition: all 0.2s;
-    }
-
-    .btn-secondary:hover {
-        background: var(--bg);
-        color: var(--ink);
-    }
-
-    /* Alert Error Validation */
-    .alert-danger {
-        background-color: var(--rust-soft);
-        border: 1px solid #E0B5AC;
-        color: var(--rust);
-        padding: 12px 16px;
-        border-radius: 8px;
-        font-size: 13px;
-        margin-bottom: 24px;
-    }
-    .alert-danger ul {
-        margin: 4px 0 0;
-        padding-left: 20px;
-    }
-</style>
+{{-- Breadcrumb --}}
+<div style="display:flex; align-items:center; gap:8px; margin-bottom:24px; font-size:13px; color:var(--ink-soft);">
+    <a href="{{ route('admin.jadwal-pelajaran.index') }}"
+       style="color:var(--green); text-decoration:none; font-weight:500;">
+        ← Jadwal Pelajaran
+    </a>
+    <span>/</span>
+    <span style="color:var(--ink);">Tambah Jadwal</span>
+</div>
 
 <div class="page-header">
-    <h2>Tambah Jadwal</h2>
-    <p>Alokasikan slot waktu mingguan baru untuk rombongan belajar dan ruangan kelas.</p>
+    <h2>Tambah Jadwal Pelajaran</h2>
+    <p>Isi form di bawah untuk menambah satu slot jadwal baru.</p>
 </div>
 
-<div class="form-container">
-    <!-- Tampilkan Error Validasi Jika Ada -->
-    @if ($errors->any())
-        <div class="alert-danger">
-            <strong>Gagal menyimpan data:</strong>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
+<div class="board" style="max-width:560px;">
+    <form action="{{ route('admin.jadwal-pelajaran.store') }}" method="POST">
+        @csrf
+
+        {{-- Kelas --}}
+        <div style="margin-bottom:18px;">
+            <label style="font-size:12px; color:var(--ink-soft); display:block; margin-bottom:6px;">
+                Kelas
+            </label>
+            <select name="kelas_id" required style="
+                width: 100%;
+                background: var(--card);
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 10px 12px;
+                font-size: 13px;
+                font-family: var(--sans);
+                color: var(--ink);
+            ">
+                <option value="" disabled selected>Pilih kelas</option>
+                @foreach($listKelas->groupBy('tingkat') as $tingkat => $kelasList)
+                    <optgroup label="Kelas {{ $tingkat == 10 ? 'X' : ($tingkat == 11 ? 'XI' : 'XII') }}">
+                        @foreach($kelasList as $k)
+                            <option value="{{ $k->id }}" {{ old('kelas_id') == $k->id ? 'selected' : '' }}>
+                                {{ $k->nama_kelas }}
+                            </option>
+                        @endforeach
+                    </optgroup>
                 @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <div class="board">
-        <div class="board-head">
-            <h3>Form Plotting Jadwal Baru</h3>
+            </select>
+            @error('kelas_id')
+                <p style="color:var(--rust); font-size:11px; margin:4px 0 0;">{{ $message }}</p>
+            @enderror
         </div>
 
-        <form action="{{ route('admin.jadwal-pelajaran.store') }}" method="POST">
-            @csrf
+        {{-- Ruangan --}}
+        <div style="margin-bottom:18px;">
+            <label style="font-size:12px; color:var(--ink-soft); display:block; margin-bottom:6px;">
+                Ruangan
+            </label>
+            <select name="ruangan_id" required style="
+                width: 100%;
+                background: var(--card);
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 10px 12px;
+                font-size: 13px;
+                font-family: var(--sans);
+                color: var(--ink);
+            ">
+                <option value="" disabled selected>Pilih ruangan</option>
+                @foreach($listRuangan as $r)
+                    <option value="{{ $r->id }}" {{ old('ruangan_id') == $r->id ? 'selected' : '' }}>
+                        {{ $r->nama_ruangan }}
+                    </option>
+                @endforeach
+            </select>
+            @error('ruangan_id')
+                <p style="color:var(--rust); font-size:11px; margin:4px 0 0;">{{ $message }}</p>
+            @enderror
+        </div>
 
-            <!-- Input Hari -->
-            <div class="form-group">
-                <label for="hari" class="form-label">Hari Pelajaran</label>
-                <select name="hari" id="hari" class="form-select" required>
-                    <option value="">-- Pilih Hari --</option>
-                    <option value="senin" {{ old('hari') == 'senin' ? 'selected' : '' }}>Senin</option>
-                    <option value="selasa" {{ old('hari') == 'selasa' ? 'selected' : '' }}>Selasa</option>
-                    <option value="rabu" {{ old('hari') == 'rabu' ? 'selected' : '' }}>Rabu</option>
-                    <option value="kamis" {{ old('hari') == 'kamis' ? 'selected' : '' }}>Kamis</option>
-                    <option value="jumat" {{ old('hari') == 'jumat' ? 'selected' : '' }}>Jumat</option>
-                    <option value="sabtu" {{ old('hari') == 'sabtu' ? 'selected' : '' }}>Sabtu</option>
-                </select>
+        {{-- Hari --}}
+        <div style="margin-bottom:18px;">
+            <label style="font-size:12px; color:var(--ink-soft); display:block; margin-bottom:6px;">
+                Hari
+            </label>
+            <select name="hari" required style="
+                width: 100%;
+                background: var(--card);
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 10px 12px;
+                font-size: 13px;
+                font-family: var(--sans);
+                color: var(--ink);
+            ">
+                <option value="" disabled selected>Pilih hari</option>
+                @foreach($hariList as $hari)
+                    <option value="{{ $hari }}" {{ old('hari') == $hari ? 'selected' : '' }}>
+                        {{ $hari }}
+                    </option>
+                @endforeach
+            </select>
+            @error('hari')
+                <p style="color:var(--rust); font-size:11px; margin:4px 0 0;">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Jam --}}
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
+            <div>
+                <label style="font-size:12px; color:var(--ink-soft); display:block; margin-bottom:6px;">
+                    Jam mulai
+                </label>
+                <input
+                    type="time"
+                    name="jam_mulai"
+                    required
+                    min="06:45"
+                    max="15:00"
+                    value="{{ old('jam_mulai') }}"
+                    style="
+                        width: 100%;
+                        background: var(--card);
+                        border: 1px solid var(--line);
+                        border-radius: 8px;
+                        padding: 10px 12px;
+                        font-size: 13px;
+                        font-family: var(--mono);
+                        color: var(--ink);
+                    "
+                >
+                @error('jam_mulai')
+                    <p style="color:var(--rust); font-size:11px; margin:4px 0 0;">{{ $message }}</p>
+                @enderror
             </div>
 
-            <!-- Input Kelas & Ruangan (Berdampingan) -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="kelas_id" class="form-label">Kelas / Rombel</label>
-                    <select name="kelas_id" id="kelas_id" class="form-select" required>
-                        <option value="">-- Pilih Kelas --</option>
-                        @foreach($listKelas as $kelas)
-                            <option value="{{ $kelas->id }}" {{ old('kelas_id') == $kelas->id ? 'selected' : '' }}>
-                                {{ $kelas->nama_kelas }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="ruangan_id" class="form-label">Alokasi Ruangan</label>
-                    <select name="ruangan_id" id="ruangan_id" class="form-select" required>
-                        <option value="">-- Pilih Ruangan --</option>
-                        @foreach($listRuangan as $ruangan)
-                            <option value="{{ $ruangan->id }}" {{ old('ruangan_id') == $ruangan->id ? 'selected' : '' }}>
-                                ☖ {{ $ruangan->nama_ruangan }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            <div>
+                <label style="font-size:12px; color:var(--ink-soft); display:block; margin-bottom:6px;">
+                    Jam selesai
+                </label>
+                <input
+                    type="time"
+                    name="jam_selesai"
+                    required
+                    min="06:45"
+                    max="15:00"
+                    value="{{ old('jam_selesai') }}"
+                    style="
+                        width: 100%;
+                        background: var(--card);
+                        border: 1px solid var(--line);
+                        border-radius: 8px;
+                        padding: 10px 12px;
+                        font-size: 13px;
+                        font-family: var(--mono);
+                        color: var(--ink);
+                    "
+                >
+                @error('jam_selesai')
+                    <p style="color:var(--rust); font-size:11px; margin:4px 0 0;">{{ $message }}</p>
+                @enderror
             </div>
+        </div>
 
-            <!-- Input Jam Mulai & Jam Selesai (Berdampingan) -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="jam_mulai" class="form-label">Jam Mulai</label>
-                    <input type="time" name="jam_mulai" id="jam_mulai" class="form-control" value="{{ old('jam_mulai') }}" required>
-                </div>
+        {{-- Tombol --}}
+        <div style="display:flex; gap:10px;">
+            <button type="submit" style="
+                background: var(--green);
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-size: 13px;
+                font-family: var(--sans);
+                font-weight: 500;
+                cursor: pointer;
+            ">
+                Simpan Jadwal
+            </button>
+            <a href="{{ route('admin.jadwal-pelajaran.index') }}" class="btn-ghost" style="padding:10px 16px; font-size:13px;">
+                Batal
+            </a>
+        </div>
 
-                <div class="form-group">
-                    <label for="jam_selesai" class="form-label">Jam Selesai</label>
-                    <input type="time" name="jam_selesai" id="jam_selesai" class="form-control" value="{{ old('jam_selesai') }}" required>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="btn-group">
-                <a href="{{ route('admin.jadwal-pelajaran.index') }}" class="btn-secondary">
-                    Batal
-                </a>
-                <button type="submit" class="btn-primary">
-                    Simpan Jadwal
-                </button>
-            </div>
-        </form>
-    </div>
+    </form>
 </div>
+
 @endsection

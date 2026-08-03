@@ -13,83 +13,57 @@ class JadwalPelajaranController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        //
-        $query = JadwalPelajaran::with(['Kelas', 'Ruangan']);
+        $kelasByTingkat = Kelas::withCount('jadwalPelajaran')
+            ->orderBy('nama_kelas')
+            ->get()
+            ->groupBy('tingkat'); // [10 => [...], 11 => [...], 12 => [...]]
 
-        if($request->filled('kelas_id')){
-            $query->whereHas('Kelas', function ($query) use ($request){
-                return $query->where('id', $request->kelas_id);
-            });
-        }
-
-        $listKelas = Kelas::all();
-        $jadwalPelajaran = $query->get();
-
-        return view('admin.jadwal-pelajaran.index', compact('jadwalPelajaran', 'listKelas'));
+        return view('admin.jadwal-pelajaran.index', compact('kelasByTingkat'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Detail jadwal satu kelas — dikelompokkan per hari
+    public function show(Kelas $kelas)
     {
-        //
-        $listKelas = Kelas::all();
-        $listRuangan = Ruangan::all();
+        $jadwalByHari = JadwalPelajaran::with('ruangan')
+            ->where('kelas_id', $kelas->id)
+            ->orderBy('jam_mulai')
+            ->get()
+            ->groupBy('hari');
 
-        return view('admin.jadwal-pelajaran.create', compact('listKelas', 'listRuangan'));
+        $listRuangan = Ruangan::orderBy('nama_ruangan')->get();
+        $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+        return view('admin.jadwal-pelajaran.show', compact('kelas', 'jadwalByHari', 'listRuangan', 'hariList'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    // Simpan slot baru — terikat ke kelas tertentu
+    public function store(Request $request, Kelas $kelas)
     {
-        //
-        $validated = $request->validate([
-            'ruangan_id' => 'required',
-            'kelas_id' => 'required',
-            'hari' => 'required|string',
-            'jam_mulai' => 'required|after_or_equal:06:45|before_or_equal:15:00',
-            'jam_selesai' => 'required|after:jam_mulai|after_or_equal:06:45|before_or_equal:15:00'
+        $request->validate([
+            'ruangan_id'  => 'required|exists:ruangan,id',
+            'hari'        => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+            'jam_mulai'   => 'required|date_format:H:i|after_or_equal:06:45|before_or_equal:15:00',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai|before_or_equal:15:00',
         ]);
 
-        JadwalPelajaran::create($validated);
+        JadwalPelajaran::create([
+            'kelas_id'    => $kelas->id,
+            'ruangan_id'  => $request->ruangan_id,
+            'hari'        => $request->hari,
+            'jam_mulai'   => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+        ]);
 
-        return redirect()->route('admin.jadwal-pelajaran.index')->with('success', 'Jadwal pelajaran berhasil dibuat');
+        return back()->with('success', 'Slot jadwal berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(JadwalPelajaran $jadwalPelajaran)
+    // Hapus satu slot jadwal
+    public function destroy(Kelas $kelas, JadwalPelajaran $jadwalPelajaran)
     {
-        //
-    }
+        $jadwalPelajaran->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(JadwalPelajaran $jadwalPelajaran)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, JadwalPelajaran $jadwalPelajaran)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(JadwalPelajaran $jadwalPelajaran)
-    {
-        //
+        return back()->with('success', 'Slot jadwal berhasil dihapus.');
     }
 }
