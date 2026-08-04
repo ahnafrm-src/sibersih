@@ -1,155 +1,52 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Ruangan — SI-BERSIH</title>
-<link rel="preconnect" href="https://googleapis.com">
-<link href="https://googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg: #EEF2ED;
-    --card: #FFFFFF;
-    --ink: #1C2620;
-    --ink-soft: #5B6660;
-    --line: #DADFD8;
-    --green: #2F6D4F;
-    --green-soft: #E4EFE8;
-    --amber: #C98A2B;
-    --amber-soft: #FBEEDA;
-    --rust: #B14A3A;
-    --rust-soft: #F7E4E0;
-    --display: 'Fraunces', serif;
-    --sans: 'IBM Plex Sans', sans-serif;
-    --mono: 'IBM Plex Mono', monospace;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);display:flex;min-height:100vh;}
+@extends('layouts.admin')
 
-  .sidebar {
-    width: 260px;
-    background: var(--card);
-    border-right: 1px solid var(--line);
-    display: flex;
-    flex-direction: column;
-    padding: 32px 16px;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-  }
-  .brand{display:flex;align-items:center;gap:10px;margin-bottom:40px;padding-left:8px;}
-  .brand .mark{width:30px;height:30px;border-radius:6px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:600;font-size:14px;}
-  .brand h1{font-family:var(--display);font-weight:600;font-size:20px;margin:0;}
+@section('title', 'Data Ruangan')
 
-  .nav-group { display: flex; flex-direction: column; gap: 4px; }
-  .nav-item {
-    display: flex; align-items: center; padding: 10px 12px;
-    color: var(--ink-soft); text-decoration: none; font-size: 14px;
-    font-weight: 500; border-radius: 8px; transition: all 0.2s;
-  }
-  .nav-item:hover { background: var(--bg); color: var(--ink); }
-  .nav-item.active { background: var(--green-soft); color: var(--green); font-weight: 600; }
-  .nav-item .icon { margin-right: 10px; font-family: var(--mono); font-size: 14px; }
+@section('content')
 
-  .main-content { margin-left: 260px; width: calc(100% - 260px); padding: 40px 48px; }
-  .page-header { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; }
-  .page-header h2 { font-family: var(--display); font-size: 24px; margin: 0 0 4px; font-weight: 600; }
-  .page-header p { margin: 0; font-size: 14px; color: var(--ink-soft); }
-
-  .btn-primary{background:var(--green);color:#fff;text-align:center;padding:11px 18px;border-radius:10px;font-weight:500;font-size:13px;text-decoration:none;display:inline-block;}
-  .btn-ghost{border:1px solid var(--line);background:transparent;color:var(--ink);text-align:center;padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer;font-family:var(--sans);text-decoration:none;display:inline-block;}
-  .btn-ghost:hover{background:var(--bg);}
-  .btn-danger{border:none;background:transparent;color:var(--rust);font-size:12px;cursor:pointer;font-family:var(--sans);padding:6px 10px;}
-
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;}
-  .panel h3{font-family:var(--display);font-size:16px;margin:0 0 16px;font-weight:600;}
-  .table-header{display:grid;grid-template-columns:1fr 160px;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--line);font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
-  .room-row{display:grid;grid-template-columns:1fr 160px;gap:12px;align-items:center;padding:14px 0;border-top:1px solid var(--line);font-size:13px;}
-  .room-row:first-of-type{border-top:none;}
-  .room-code{font-family:var(--mono);font-weight:500;}
-  .actions{display:flex;gap:8px;justify-content:flex-end;}
-
-  .alert{padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:20px;}
-  .alert.success{background:var(--green-soft);color:var(--green);}
-  .alert.error{background:var(--rust-soft);color:var(--rust);}
-  .empty-state{text-align:center;padding:40px 0;color:var(--ink-soft);font-size:13px;}
-</style>
-</head>
-<body>
-
-  <div class="sidebar">
-    <div class="brand">
-      <div class="mark">SB</div>
-      <h1>SI-BERSIH</h1>
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;">
+    <div>
+      <h2>Data Ruangan</h2>
+      <p>Kelola daftar ruangan yang dipakai untuk jadwal & laporan kebersihan</p>
     </div>
-    <div class="nav-group">
-      <a href="{{ route('admin.dashboard') }}" class="nav-item">
-        <span class="icon">■</span> Ringkasan
-      </a>
-      <a href="{{ route('admin.kelas.index') }}" class="nav-item">
-        <span class="icon">▤</span> Data Kelas
-      </a>
-      <a href="{{ route('admin.ruangan.index') }}" class="nav-item active">
-        <span class="icon">☖</span> Data Ruangan
-      </a>
-      <a href="/laporan" class="nav-item">
-        <span class="icon">▲</span> Semua Laporan
-      </a>
-      <form action="{{ route('admin.logout') }}" method="POST" style="margin-top: 40px;">
-        @csrf
-        <button type="submit" class="nav-item" style="background:none; border:none; width:100%; text-align:left; cursor:pointer; font-family:var(--sans);">
-          <span class="icon">✕</span> Keluar Sistem
-        </button>
-      </form>
-    </div>
+    <a href="{{ route('admin.ruangan.create') }}"
+       style="background:var(--green);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:500;text-decoration:none;">
+      + Tambah Ruangan
+    </a>
   </div>
 
-  <div class="main-content">
+  @if (session('success'))
+    <div style="background:var(--green-soft);color:var(--green);padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:20px;">
+      {{ session('success') }}
+    </div>
+  @endif
 
-    <div class="page-header">
-      <div>
-        <h2>Data Ruangan</h2>
-        <p>Kelola daftar ruangan yang dipakai untuk jadwal & laporan kebersihan</p>
-      </div>
-      <a href="{{ route('admin.ruangan.create') }}" class="btn-primary">+ Tambah Ruangan</a>
+  <div class="panel">
+    <h3>Daftar Ruangan</h3>
+
+    <div class="table-header" style="grid-template-columns:1fr 160px;">
+      <div>Nama Ruangan</div>
+      <div style="text-align:right;">Aksi</div>
     </div>
 
-    @if (session('success'))
-      <div class="alert success">{{ session('success') }}</div>
-    @endif
-
-    <div class="panel">
-      <h3>Daftar Ruangan</h3>
-
-      <div class="table-header">
-        <div>Nama Ruangan</div>
-        <div style="text-align:right;">Aksi</div>
-      </div>
-
-      @forelse ($ruangan as $item)
-        <div class="room-row">
-          <div class="room-code">{{ $item->nama_ruangan }}</div>
-          <div class="actions">
-            <a href="{{ route('admin.ruangan.edit', $item) }}" class="btn-ghost">Ubah</a>
-            <form action="{{ route('admin.ruangan.destroy', $item) }}" method="POST"
-                  onsubmit="return confirm('Hapus ruangan ini?')">
-              @csrf
-              @method('DELETE')
-              <button type="submit" class="btn-danger">Hapus</button>
-            </form>
-          </div>
+    @forelse ($ruangan as $item)
+      <div class="lap-row" style="grid-template-columns:1fr 160px;">
+        <div class="lap-loc" style="font-family:var(--mono);">{{ $item->nama_ruangan }}</div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <a href="{{ route('admin.ruangan.edit', $item) }}" class="btn-ghost">Ubah</a>
+          <form action="{{ route('admin.ruangan.destroy', $item) }}" method="POST"
+                onsubmit="return confirm('Hapus ruangan ini?')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn-ghost" style="color:var(--rust);">Hapus</button>
+          </form>
         </div>
-      @empty
-        <div class="empty-state">Belum ada data ruangan.</div>
-      @endforelse
-    </div>
-
-    <div style="margin-top:20px;">
-      {{ $ruangan->links() }}
-    </div>
-
+      </div>
+    @empty
+      <p style="text-align:center;color:var(--ink-soft);font-size:13px;padding:24px 0;">Belum ada data ruangan.</p>
+    @endforelse
   </div>
 
-</body>
-</html>
+  <div style="margin-top:20px;">{{ $ruangan->links() }}</div>
+
+@endsection
