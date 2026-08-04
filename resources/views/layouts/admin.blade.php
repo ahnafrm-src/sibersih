@@ -155,10 +155,10 @@
       <a href="{{ route('admin.kelas.index') }}" class="nav-item {{ request()->routeIs('admin.kelas.*') ? 'active' : '' }}">
         <span class="icon">▤</span> Data Kelas
       </a>
-      <a href="{{ route('admin.ruangan.index') }}" class="nav-item">
+      <a href="{{ route('admin.ruangan.index') }}" class="nav-item {{ request()->routeIs('admin.ruangan.*') ? 'active' : '' }}">
         <span class="icon">☖</span> Data Ruangan
       </a>
-      <a href="{{ route('admin.jadwal-pelajaran.index') }}" class="nav-item">
+      <a href="{{ route('admin.jadwal-pelajaran.index') }}" class="nav-item {{ request()->routeIs('admin.jadwal-pelajaran.*') ? 'active' : '' }}">
         <span class="icon">📅</span> Data Jadwal Pelajaran
       </a>
       <a href="/laporan" class="nav-item">

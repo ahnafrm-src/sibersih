@@ -26,5 +26,15 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::resource('ruangan', RuanganController::class);
 
     //jadwal pelajaran
-    Route::resource('jadwal-pelajaran', JadwalPelajaranController::class);  
+    Route::get('/jadwal-pelajaran', [JadwalPelajaranController::class, 'index'])
+        ->name('jadwal-pelajaran.index');
+
+    Route::get('/jadwal-pelajaran/{kelas}', [JadwalPelajaranController::class, 'show'])
+        ->name('jadwal-pelajaran.show');
+
+    Route::post('/jadwal-pelajaran/{kelas}', [JadwalPelajaranController::class, 'store'])
+        ->name('jadwal-pelajaran.store');
+
+    Route::delete('/jadwal-pelajaran/{kelas}/{jadwalPelajaran}', [JadwalPelajaranController::class, 'destroy'])
+        ->name('jadwal-pelajaran.destroy');
 });
