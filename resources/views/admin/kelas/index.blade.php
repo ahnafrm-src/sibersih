@@ -5,18 +5,17 @@
     <style>
         /* Notifikasi Sukses */
         .alert-success {
-            background: #E8F5E9;
-            /* Background hijau lembut */
-            border: 1px solid var(--green);
-            color: #1B5E20;
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-family: var(--sans);
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+             background: #E8F5E9;
+             border: 1px solid var(--green);
+             color: #1B5E20;
+             padding: 12px 16px;
+             border-radius: 10px;
+             font-size: 13px;
+             font-family: var(--sans);
+             margin-bottom: 24px;
+             display: flex;
+             align-items: center;
+             justify-content: space-between;
         }
 
         .alert-success strong {
@@ -109,6 +108,7 @@
 
         .table-header {
             display: grid;
+            grid-template-columns: 140px 1fr 60px 100px;
             gap: 12px;
             padding-bottom: 10px;
             border-bottom: 1px solid var(--line);
@@ -119,21 +119,20 @@
         }
 
         .row-item {
-            display: grid;
-            gap: 12px;
-            align-items: center;
-            padding: 14px 0;
             border-top: 1px solid var(--line);
-            font-size: 13px;
-        }
-
-        .table-header,
-        .row-item {
-            grid-template-columns: 140px 1fr 60px 100px;
+            padding: 14px 0;
         }
 
         .row-item:first-of-type {
             border-top: none;
+        }
+
+        .view-mode-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr 60px 100px;
+            gap: 12px;
+            align-items: center;
+            font-size: 13px;
         }
 
         .cls-name {
@@ -185,18 +184,17 @@
             font-size: 13px;
         }
 
-        /* Inline Edit Mode */
-        .row-item.is-editing .view-mode {
+        /* Inline Edit Mode Switch */
+        .row-item.is-editing .view-mode-grid {
             display: none;
         }
 
-        .row-item .edit-mode {
+        .row-item .edit-mode-grid {
             display: none;
         }
 
-        .row-item.is-editing .edit-mode {
+        .row-item.is-editing .edit-mode-grid {
             display: grid;
-            grid-column: 1 / -1;
             grid-template-columns: 140px 1fr 60px 100px;
             gap: 12px;
             align-items: center;
@@ -245,7 +243,7 @@
     </div>
 
     <div class="grid-split">
-        <!-- Input Form (tidak diubah) -->
+        <!-- Input Form -->
         <div>
             <div class="section-label">Tambah Kelas</div>
             <div class="panel">
@@ -268,56 +266,65 @@
                 <div class="table-header">
                     <div>Nama Kelas</div>
                     <div>Performa Kebersihan</div>
-                    <div style="text-align:left;">Skor</div>
-                    <div>Aksi</div>
+                    <div style="text-align:right;">Skor</div>
+                    <div style="text-align:right;">Aksi</div>
                 </div>
 
                 @forelse($data_kelas as $kelas)
                     @php
-                        $skorTerbaru = $kelas->skorMingguan()->latest()->first();
+                        $skorTerbaru = $kelas->skorMingguan->sortByDesc('created_at')->first();
                         $nilaiSkor = $skorTerbaru->skor ?? null;
+
+                        // Penyiapan data CSS & Nilai agar aman dari Linter VS Code
+                        $widthPercent = is_null($nilaiSkor) ? 0 : $nilaiSkor;
+                        $scoreClass = '';
+                        if (!is_null($nilaiSkor)) {
+                            if ($nilaiSkor < 50) {
+                                $scoreClass = 'danger';
+                            } elseif ($nilaiSkor < 75) {
+                                $scoreClass = 'warning';
+                            }
+                        }
                     @endphp
                     <div class="row-item" id="row-{{ $kelas->id }}">
 
                         <!-- ===== VIEW MODE ===== -->
-                        <div class="view-mode">
+                        <div class="view-mode-grid">
                             <div class="cls-name">{{ $kelas->nama_kelas }}</div>
-                        </div>
-                        <div class="view-mode score-container">
-                            <div class="score-bar-bg">
-                                @if (is_null($nilaiSkor))
-                                    <div class="score-bar-fill" style="width: 0%;"></div>
+                            <div class="score-container">
+                                <div class="score-bar-bg">
+                                    <div class="score-bar-fill {{ $scoreClass }}" style="--w: {{ $widthPercent }}%"></div>
+                                </div>
+                            </div>
+                            <div class="score-val">
+                                @if(!is_null($nilaiSkor))
+                                    {{ $nilaiSkor }}%
                                 @else
-                                    <div class="score-bar-fill {{ $nilaiSkor < 50 ? 'danger' : ($nilaiSkor < 75 ? 'warning' : '') }}"
-                                        style="width: {{ $nilaiSkor }}%;"></div>
+                                    -
                                 @endif
                             </div>
-                        </div>
-                        <div class="view-mode score-val">{{ $nilaiSkor !== null ? $nilaiSkor . '%' : '—' }}</div>
-                        <div class="view-mode actions-view">
-                            <button type="button" class="btn-ghost"
-                                onclick="toggleEdit({{ $kelas->id }}, true)">Edit</button>
-                            <form action="{{ route('admin.kelas.destroy', $kelas->id) }}" method="POST"
-                                onsubmit="return confirm('Yakin hapus kelas {{ $kelas->nama_kelas }}?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-ghost">Delete</button>
-                            </form>
+                            <div class="actions-view">
+                                <button type="button" class="btn-ghost" data-id="{{ $kelas->id }}" onclick="toggleEdit(this.dataset.id, true)">Edit</button>
+                                <form action="{{ route('admin.kelas.destroy', $kelas->id) }}" method="POST"
+                                    onsubmit="return confirm('Yakin hapus kelas {{ $kelas->nama_kelas }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-ghost">Delete</button>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- ===== EDIT MODE ===== -->
-                        <form class="edit-mode" action="{{ route('admin.kelas.update', $kelas->id) }}" method="POST">
+                        <form class="edit-mode-grid" action="{{ route('admin.kelas.update', $kelas->id) }}" method="POST">
                             @csrf
                             @method('PUT')
                             <div>
-                                <input type="text" name="nama_kelas" class="edit-input" value="{{ $kelas->nama_kelas }}"
-                                    required>
+                                <input type="text" name="nama_kelas" class="edit-input" value="{{ $kelas->nama_kelas }}" required>
                             </div>
                             <div></div>
                             <div></div>
                             <div style="display:flex; gap:8px; justify-content:flex-end;">
-                                <button type="button" class="btn-ghost"
-                                    onclick="toggleEdit({{ $kelas->id }}, false)">Batal</button>
+                                <button type="button" class="btn-ghost" data-id="{{ $kelas->id }}" onclick="toggleEdit(this.dataset.id, false)">Batal</button>
                                 <button type="submit" class="btn-save">Simpan</button>
                             </div>
                         </form>
@@ -333,7 +340,9 @@
     <script>
         function toggleEdit(id, isEditing) {
             const row = document.getElementById('row-' + id);
-            row.classList.toggle('is-editing', isEditing);
+            if (row) {
+                row.classList.toggle('is-editing', isEditing);
+            }
         }
     </script>
-@endsection
+ @endsection
