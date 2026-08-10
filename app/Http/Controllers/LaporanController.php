@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Laporan;
 use App\Models\Ruangan;
+use App\Models\Kelas;
 use App\Services\AutoAssignmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,8 @@ class LaporanController extends Controller
     public function create()
     {
         $ruangans = Ruangan::all();
-        return view('lapor.create', compact('ruangans'));
+        $kelases  = Kelas::orderBy('nama_kelas')->get(); 
+        return view('lapor.create', compact('ruangans', 'kelases'));
     }
 
     // Proses simpan laporan + jalankan auto assignment
@@ -34,11 +36,12 @@ class LaporanController extends Controller
         $kelasTerdugaId = $assignmentService->assignKelas($request->ruangan_id, $waktuLapor);
 
         Laporan::create([
-            'pelapor_id'       => Auth::id() ?? 1,
             'ruangan_id'       => $request->ruangan_id,
             'foto'             => $path,
             'waktu_lapor'      => $waktuLapor,
             'kelas_terduga_id' => $kelasTerdugaId,
+            'nama_pelapor'     => $request->nama_pelapor,   // ganti dari pelapor_id
+            'kelas_pelapor'    => $request->kelas_pelapor,
             'status'           => 'baru',
         ]);
 

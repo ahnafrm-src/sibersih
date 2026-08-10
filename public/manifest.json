@@ -1,0 +1,16 @@
+{
+    "name": "SI-BERSIH",
+    "short_name": "SI-BERSIH",
+    "description": "Monitoring kebersihan pasca-MBG",
+    "theme_color": "#2F6D4F",
+    "background_color": "#EEF2ED",
+    "display": "standalone",
+    "start_url": "/",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

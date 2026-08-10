@@ -11,7 +11,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Admin\LaporanController as AdminLaporanController; 
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('lapor.laporan');
 });
 
 // ==========================================
