@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
         'keterangan',
         'foto',
         'status',
+        'waktu_lapor'
     ];
 
     // Relasi ke User / Pelapor (Ini yang tadi kurang!)
