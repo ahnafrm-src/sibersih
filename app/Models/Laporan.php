@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Model;
     protected $table = 'laporan';
 
     protected $fillable = [
-        'pelapor_id',
+        'nama_pelapor',
+        'kelas_pelapor',
         'ruangan_id',
         'kelas_terduga_id',
         'keterangan',

@@ -21,6 +21,11 @@ class Ruangan extends Model
         return $this->hasMany(JadwalPelajaran::class);
     }
 
+    public function laporanTerakhir()
+    {
+        return $this->hasOne(Laporan::class)->latestOfMany();
+    }
+
     public function laporan(): HasMany
     {
         return $this->hasMany(Laporan::class);
