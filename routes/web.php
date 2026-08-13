@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\RuanganController;
-use App\Http\Controllers\Admin\Dashboard;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\JadwalPelajaranController;
 use App\Http\Controllers\Admin\SanggahanController;
 use App\Http\Controllers\LaporanController; 
@@ -35,7 +35,7 @@ Route::post('login', [AuthController::class, 'login'])->name('admin.login');
 // 🛡️ ROUTE GROUP ADMIN / GURU PIKET
 // ==========================================
 Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function () {
-    Route::get('/', [Dashboard::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
     // Kelas & Ruangan
