@@ -12,6 +12,17 @@ use Carbon\Carbon;
 
 class LaporanController extends Controller
 {
+        // Tampilkan daftar laporan
+    public function index()
+    {
+        $laporans = Laporan::with(['ruangan', 'kelasTerduga'])
+            ->latest('waktu_lapor')
+            ->get();
+
+        return view('lapor.index', compact('laporans'));
+    }
+
+    
     // Tampilkan form lapor kebersihan
     public function create()
     {
