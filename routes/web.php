@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\SanggahanController;
 use App\Http\Controllers\LaporanController; 
 use App\Http\Controllers\Admin\LaporanController as AdminLaporanController; 
 
-Route::get('/', [LaporanController::class, 'index']);
+Route::get('/', [LaporanController::class, 'create']);
 
 // ==========================================
 // 🌐 ROUTE PUBLIC (Siswa / Perwakilan Kelas)
