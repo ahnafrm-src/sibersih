@@ -29,14 +29,16 @@
                     @endphp
                     <div @class([
                         'room',
-                        'room pending' => $status == 'baru',
+                        'room pending' => $status == 'baru' || $status == 'ditindak',
+                        // 'room pending' => $status == 'ditindak',
                         'room dispute' => $status == 'disanggah',
                     ])">
                         <div class="code">{{ $ruang->nama_ruangan }}</div>
                         <div class="cls">{{ $ruang->laporanTerakhir->kelasTerduga->nama_kelas ?? '-' }}</div>
                         <div class="status"><span @class([
                             'dot ok',
-                            'dot pending' => $status == 'baru',
+                            'dot pending' => $status == 'baru' || $status == 'ditindak',
+                            // 'dot pending' => $status == 'ditindak',
                             'dot dispute' => $status == 'disanggah',
                         ])></span>{{ $status }}
                         </div>
