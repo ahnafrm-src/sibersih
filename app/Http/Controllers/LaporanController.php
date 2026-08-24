@@ -47,4 +47,6 @@ class LaporanController extends Controller
 
         return back()->with('success', 'Laporan berhasil terkirim! Terima kasih telah menjaga kebersihan.');
     }
+
+    
 }

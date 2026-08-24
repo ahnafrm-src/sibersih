@@ -1,5 +1,4 @@
 @extends('layouts.admin')
-
 @section('title', 'Semua Laporan')
 
 @section('content')
@@ -23,7 +22,7 @@
                 <tr style="border-bottom: 1px solid var(--line); color: var(--ink-soft); font-size: 11px; text-transform: uppercase;">
                     <th style="padding: 12px 8px;">Waktu & Ruangan</th>
                     <th style="padding: 12px 8px;">Foto Bukti</th>
-                    <th style="padding: 12px 8px;">Kelas Terduga (Auto)</th>
+                    <th style="padding: 12px 8px;">Kelas Terduga</th>
                     <th style="padding: 12px 8px;">Status</th>
                     <th style="padding: 12px 8px; text-align: right;">Aksi</th>
                 </tr>
@@ -33,13 +32,14 @@
                 <tr style="border-bottom: 1px solid var(--line);">
                     <td style="padding: 12px 8px;">
                         <strong style="display:block;">{{ $item->ruangan->nama_ruangan ?? '-' }}</strong>
-                        <span style="color: var(--ink-soft); font-size: 11px;">
+                        <span style="color: var(--ink-soft); font-size: 11px; font-family: var(--mono);">
                             {{ \Carbon\Carbon::parse($item->waktu_lapor)->translatedFormat('d M Y, H:i') }}
                         </span>
                     </td>
                     <td style="padding: 12px 8px;">
                         @if($item->foto)
-                            <a href="{{ asset('storage/' . $item->foto) }}" target="_blank" style="color: var(--green); font-weight: 500; text-decoration: underline;">
+                            <a href="{{ asset('storage/' . $item->foto) }}" target="_blank"
+                               style="color: var(--green); font-weight: 500; text-decoration: underline;">
                                 Lihat Foto
                             </a>
                         @else
@@ -48,39 +48,39 @@
                     </td>
                     <td style="padding: 12px 8px;">
                         @if($item->kelasTerduga)
-                            <span style="background: var(--green-soft); color: var(--green); padding: 4px 8px; border-radius: 4px; font-weight: 600;">
+                            <span style="background: var(--green-soft); color: var(--green); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
                                 {{ $item->kelasTerduga->nama_kelas }}
                             </span>
                         @else
-                            <span style="color: var(--ink-soft); font-style: italic;">Tidak terdeteksi</span>
+                            <span style="color: var(--ink-soft); font-style: italic; font-size: 12px;">Tidak terdeteksi</span>
                         @endif
                     </td>
                     <td style="padding: 12px 8px;">
-                        @if($item->status === 'baru')
-                            <span class="badge pending">Baru</span>
-                        @elseif($item->status === 'ditindak')
-                            <span class="badge dispute" style="background: #FFF3CD; color: #856404;">Ditindak</span>
-                        @elseif($item->status === 'disengketakan')
-                            <span class="badge dispute">Disengketakan</span>
-                        @else
-                            <span class="badge done">Selesai</span>
-                        @endif
+                        @php
+                            $badgeMap = [
+                                'baru'     => ['label' => 'Baru',     'bg' => 'var(--amber-soft)', 'color' => 'var(--amber)'],
+                                'ditindak' => ['label' => 'Ditindak', 'bg' => '#FFF3CD',           'color' => '#856404'],
+                                'selesai'  => ['label' => 'Selesai',  'bg' => 'var(--green-soft)', 'color' => 'var(--green)'],
+                            ];
+                            $badge = $badgeMap[$item->status] ?? ['label' => $item->status, 'bg' => 'var(--line)', 'color' => 'var(--ink-soft)'];
+                        @endphp
+                        <span style="background: {{ $badge['bg'] }}; color: {{ $badge['color'] }}; padding: 4px 9px; border-radius: 20px; font-size: 11px; font-weight: 500;">
+                            {{ $badge['label'] }}
+                        </span>
                     </td>
                     <td style="padding: 12px 8px; text-align: right;">
-                        <form action="{{ route('admin.laporan.update-status', $item->id) }}" method="POST" style="display: inline-block;">
-                            @csrf
-                            @method('PATCH')
-                            <select name="status" onchange="this.form.submit()" style="padding: 4px 8px; border-radius: 6px; font-size: 12px; border: 1px solid var(--line); cursor: pointer;">
-                                <option value="baru" {{ $item->status === 'baru' ? 'selected' : '' }}>Baru</option>
-                                <option value="ditindak" {{ $item->status === 'ditindak' ? 'selected' : '' }}>Ditindak</option>
-                                <option value="selesai" {{ $item->status === 'selesai' ? 'selected' : '' }}>Selesai</option>
-                            </select>
-                        </form>
+                        <a href="{{ route('admin.laporan.show', $item->id) }}"
+                           class="btn-ghost"
+                           style="text-decoration: none; font-size: 12px;">
+                            Lihat Detail →
+                        </a>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="padding: 24px; text-align: center; color: var(--ink-soft);">Belum ada laporan kebersihan yang masuk.</td>
+                    <td colspan="5" style="padding: 24px; text-align: center; color: var(--ink-soft);">
+                        Belum ada laporan kebersihan yang masuk.
+                    </td>
                 </tr>
                 @endforelse
             </tbody>

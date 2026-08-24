@@ -26,7 +26,7 @@ class LaporanController extends Controller
     public function updateStatus(Request $request, Laporan $laporan)
     {
         $request->validate([
-            'status' => 'required|in:baru,ditindak,disengketakan,selesai',
+            'status' => 'required|in:baru,ditindak,selesai',
         ]);
 
         $laporan->update([
@@ -43,5 +43,34 @@ class LaporanController extends Controller
     {
         $laporan->delete();
         return back()->with('success', 'Laporan berhasil dihapus.');
+    }
+
+    /**
+     * Menampilkan detail laporan
+     */
+    public function show(Laporan $laporan)
+    {
+        $laporan->load(['ruangan', 'kelasTerduga', 'pelapor']);
+        $kelas = \App\Models\Kelas::orderBy('nama_kelas')->get();
+
+        return view('admin.laporan.show', compact('laporan', 'kelas'));
+    }
+
+    /**
+     * Koreksi kelas terduga secara manual oleh admin
+     */
+    public function koreksiKelas(Request $request, Laporan $laporan)
+    {
+        $request->validate([
+            'kelas_terduga_id' => 'required|exists:kelas,id',
+            'catatan_koreksi'  => 'required|string|min:5',
+        ]);
+
+        $laporan->update([
+            'kelas_terduga_id' => $request->kelas_terduga_id,
+            'catatan_koreksi'  => $request->catatan_koreksi,
+        ]);
+
+        return back()->with('success', 'Kelas terduga berhasil dikoreksi.');
     }
 }

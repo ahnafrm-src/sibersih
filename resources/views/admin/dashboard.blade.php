@@ -2,101 +2,104 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <!-- Area Konten Utama -->
-    <div>
+    <div class="page-header">
+        <h2>Ringkasan Monitoring</h2>
+        <p>Selamat datang kembali, Admin Sarpras</p>
+    </div>
 
-        <div class="page-header">
-            <h2>Ringkasan Monitoring</h2>
-            <p>Selamat datang kembali, Admin Sarpras</p>
+    <div class="section-label">Papan Status Ruangan</div>
+    <div class="board">
+        <div class="board-head">
+            <h3>Status Ruangan Hari Ini</h3>
+            <div class="legend">
+                <span><span class="dot ok"></span>Bersih</span>
+                <span><span class="dot pending"></span>Perlu Ditindak</span>
+            </div>
         </div>
 
-        <div class="section-label">Papan Status Ruangan</div>
-        <div class="board">
-            <div class="board-head">
-                <h3>Status Ruangan Hari Ini</h3>
-                <div class="legend">
-                    <span><span class="dot ok"></span>Bersih</span>
-                    <span><span class="dot pending"></span>Menunggu</span>
-                    <span><span class="dot dispute"></span>Disengketakan</span>
-                </div>
-            </div>
-
-            <div class="room-grid">
-
-                @foreach ($ruangan as $ruang)
-                    @php
-                        $status = $ruang->laporanTerakhir->status ?? 'Bersih';
-                    @endphp
-                    <div @class([
-                        'room',
-                        'room pending' => $status == 'baru' || $status == 'ditindak',
-                        // 'room pending' => $status == 'ditindak',
-                        'room dispute' => $status == 'disanggah',
-                    ])">
-                        <div class="code">{{ $ruang->nama_ruangan }}</div>
-                        <div class="cls">{{ $ruang->laporanTerakhir->kelasTerduga->nama_kelas ?? '-' }}</div>
-                        <div class="status"><span @class([
-                            'dot ok',
-                            'dot pending' => $status == 'baru' || $status == 'ditindak',
-                            // 'dot pending' => $status == 'ditindak',
-                            'dot dispute' => $status == 'disanggah',
-                        ])></span>{{ $status }}
-                        </div>
+        <div class="room-grid">
+            @forelse($ruangan as $ruang)
+                @php
+                    $status = $ruang->laporanTerakhir->status ?? null;
+                    $label = match ($status) {
+                        'baru' => 'Menunggu',
+                        'ditindak' => 'Ditindak',
+                        'selesai' => 'Selesai',
+                        default => 'Bersih',
+                    };
+                @endphp
+                <div class="room {{ in_array($status, ['baru', 'ditindak']) ? 'pending' : '' }}">
+                    <div class="code">{{ $ruang->nama_ruangan }}</div>
+                    <div class="cls">{{ $ruang->laporanTerakhir->kelasTerduga->nama_kelas ?? '-' }}</div>
+                    <div class="status">
+                        <span class="dot {{ in_array($status, ['baru', 'ditindak']) ? 'pending' : 'ok' }}"></span>
+                        {{ $label }}
                     </div>
-                @endforeach
-                {{-- <div class="room pending">
-                    <div class="code">R-02</div>
-                    <div class="cls">X RPL 2</div>
-                    <div class="status"><span class="dot pending"></span>10 mnt lalu</div>
                 </div>
-                <div class="room">
-                    <div class="code">R-03</div>
-                    <div class="cls">XI RPL 1</div>
-                    <div class="status"><span class="dot ok"></span>Bersih</div>
-                </div>
-                <div class="room dispute">
-                    <div class="code">R-04</div>
-                    <div class="cls">XII RPL 1</div>
-                    <div class="status"><span class="dot dispute"></span>Disengketakan</div>
-                </div> --}}
-            </div>
+            @empty
+                <p style="font-size: 13px; color: var(--ink-soft);">Belum ada data ruangan.</p>
+            @endforelse
+        </div>
+    </div>
+
+    <div class="section-label">Aktivitas Terbaru</div>
+    <div class="panel">
+        <h3>Daftar Laporan Terbaru</h3>
+
+        <div class="table-header">
+            <div>Foto</div>
+            <div>Ruangan & Kelas</div>
+            <div>Waktu</div>
+            <div>Status</div>
+            <div>Aksi</div>
         </div>
 
-        <div class="section-label">Aktivitas Terbaru</div>
-        <div class="panel">
-            <h3>Daftar Laporan Terbaru</h3>
-
-            <div class="table-header">
-                <div>Foto</div>
-                <div>Ruangan & Catatan</div>
-                <div>Waktu</div>
-                <div>Status</div>
-                <div>Aksi</div>
-            </div>
-
-            <!-- Contoh Baris Data -->
+        @forelse($laporanTerbaru as $item)
+            @php
+                $badgeMap = [
+                    'baru' => ['label' => 'Baru', 'class' => 'pending'],
+                    'ditindak' => ['label' => 'Ditindak', 'class' => 'pending'],
+                    'selesai' => ['label' => 'Selesai', 'class' => 'done'],
+                ];
+                $badge = $badgeMap[$item->status] ?? ['label' => $item->status, 'class' => 'pending'];
+            @endphp
             <div class="lap-row">
-                <div class="thumb">IMG</div>
-                <div>
-                    <div class="lap-loc">Ruang 5 · XII RPL 1</div>
-                    <div style="font-size:12px; color:var(--ink-soft);">Sisa buah di dekat meja guru</div>
+                <div class="thumb">
+                    @if ($item->foto)
+                        <img src="{{ asset('storage/' . $item->foto) }}"
+                            style="width:44px;height:44px;object-fit:cover;border-radius:8px;">
+                    @else
+                        <span style="font-size:10px;color:var(--ink-soft);">-</span>
+                    @endif
                 </div>
-                <div class="lap-time">09:42 WIB</div>
-                <div><span class="badge dispute">Disengketakan</span></div>
-                <div><button class="btn-ghost">Tindak Lanjut</button></div>
-            </div>
-
-            <div class="lap-row">
-                <div class="thumb">IMG</div>
                 <div>
-                    <div class="lap-loc">Kantin Belakang · X RPL 2</div>
-                    <div style="font-size:12px; color:var(--ink-soft);">Bungkus plastik di area selokan</div>
+                    <div class="lap-loc">
+                        {{ $item->ruangan->nama_ruangan ?? '-' }}
+                        @if ($item->kelasTerduga)
+                            · {{ $item->kelasTerduga->nama_kelas }}
+                        @endif
+                    </div>
+                    <div style="font-size:12px; color:var(--ink-soft);">
+                        {{ $item->nama_pelapor ?? '-' }}
+                    </div>
                 </div>
-                <div class="lap-time">09:32 WIB</div>
-                <div><span class="badge pending">Menunggu</span></div>
-                <div><button class="btn-ghost">Tindak Lanjut</button></div>
+                <div class="lap-time">
+                    {{ \Carbon\Carbon::parse($item->waktu_lapor)->format('H:i') }}
+                </div>
+                <div>
+                    <span class="badge {{ $badge['class'] }}">{{ $badge['label'] }}</span>
+                </div>
+                <div>
+                    <a href="{{ route('admin.laporan.show', $item->id) }}" class="btn-ghost"
+                        style="text-decoration:none; font-size:12px;">
+                        Detail →
+                    </a>
+                </div>
             </div>
-        </div>
-
+        @empty
+            <div style="padding: 24px; text-align: center; color: var(--ink-soft); font-size: 13px;">
+                Belum ada laporan masuk.
+            </div>
+        @endforelse
     </div>
 @endsection

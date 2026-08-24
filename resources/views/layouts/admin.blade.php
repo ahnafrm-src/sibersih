@@ -383,9 +383,9 @@
       <a href="{{ route('admin.jadwal-pelajaran.index') }}" class="nav-item {{ request()->routeIs('admin.jadwal-pelajaran.*') ? 'active' : '' }}">
         <span class="icon">📅</span> Data Jadwal Pelajaran
       </a>
-      <a href="{{ route('admin.sanggahan.index') }}" class="nav-item {{ request()->routeIs('admin.sanggahan.*') ? 'active' : '' }}">
+      {{-- <a href="{{ route('admin.sanggahan.index') }}" class="nav-item {{ request()->routeIs('admin.sanggahan.*') ? 'active' : '' }}">
         <span class="icon">⚖</span> Data Sanggahan
-      </a>
+      </a> --}}
       <a href="{{ route('admin.laporan.index') }}" class="nav-item {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
         <span class="icon">▲</span> Semua Laporan
       </a>

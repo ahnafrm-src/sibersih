@@ -7,10 +7,10 @@ use App\Http\Controllers\Admin\RuanganController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\JadwalPelajaranController;
 use App\Http\Controllers\Admin\SanggahanController;
-use App\Http\Controllers\LaporanController; 
-use App\Http\Controllers\Admin\LaporanController as AdminLaporanController; 
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
 
-Route::get('/', [LaporanController::class, 'create']);
+// Route::get('/', [LaporanController::class, 'create']);
 
 // ==========================================
 // 🌐 ROUTE PUBLIC (Siswa / Perwakilan Kelas)
@@ -56,4 +56,6 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::get('/laporan', [AdminLaporanController::class, 'index'])->name('laporan.index');
     Route::patch('/laporan/{laporan}/status', [AdminLaporanController::class, 'updateStatus'])->name('laporan.update-status');
     Route::delete('/laporan/{laporan}', [AdminLaporanController::class, 'destroy'])->name('laporan.destroy');
+    Route::get('/laporan/{laporan}', [AdminLaporanController::class, 'show'])->name('laporan.show');
+    Route::patch('/laporan/{laporan}/koreksi-kelas', [AdminLaporanController::class, 'koreksiKelas'])->name('laporan.koreksi-kelas');
 });
