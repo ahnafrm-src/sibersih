@@ -4,32 +4,37 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class KelasController extends Controller{
+class KelasController extends Controller
+{
     /**
      * Display a listing of the resource.
      */
-    public function index(){
-        $data_kelas = Kelas::with(['jadwalPelajaran', 'laporan', 'skorMingguan'])->get();
-
-        return view('admin.kelas.index', compact('data_kelas'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index()
     {
-        //
+        // Ambil data kelas beserta wali kelas dan relasi pendukung lainnya
+        $data_kelas = Kelas::with(['waliKelas', 'jadwalPelajaran', 'laporan', 'skorMingguan'])->get();
+
+        // Ambil data guru yang belum ditugaskan sebagai Wali Kelas di kelas mana pun
+        $gurus = User::where('role', 'guru')
+                     ->whereDoesntHave('kelasWali')
+                     ->get();
+
+        return view('admin.kelas.index', compact('data_kelas', 'gurus'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validated = $request->validate([
-            'nama_kelas' => 'required|string|max:255',
+            'nama_kelas'    => 'required|string|max:255',
+            'wali_kelas_id' => 'nullable|exists:users,id|unique:kelas,wali_kelas_id',
+        ], [
+            'wali_kelas_id.unique' => 'Guru ini sudah menjadi Wali Kelas di kelas lain!'
         ]);
 
         Kelas::create($validated);
@@ -38,27 +43,15 @@ class KelasController extends Controller{
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Kelas $kelas)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Kelas $kelas)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Kelas $kelas){
+    public function update(Request $request, Kelas $kelas)
+    {
         $validated = $request->validate([
-            'nama_kelas' => 'required|string|max:255',
+            'nama_kelas'    => 'required|string|max:255',
+            'wali_kelas_id' => 'nullable|exists:users,id|unique:kelas,wali_kelas_id,' . $kelas->id,
+        ], [
+            'wali_kelas_id.unique' => 'Guru ini sudah menjadi Wali Kelas di kelas lain!'
         ]);
 
         $kelas->update($validated);
@@ -69,7 +62,8 @@ class KelasController extends Controller{
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Kelas $kelas){
+    public function destroy(Kelas $kelas)
+    {
         $kelas->delete();
 
         return redirect()->route('admin.kelas.index')->with('success', 'Kelas berhasil dihapus');

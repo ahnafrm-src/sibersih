@@ -69,11 +69,21 @@
                         </span>
                     </td>
                     <td style="padding: 12px 8px; text-align: right;">
-                        <a href="{{ route('admin.laporan.show', $item->id) }}"
-                           class="btn-ghost"
-                           style="text-decoration: none; font-size: 12px;">
-                            Lihat Detail →
-                        </a>
+                        <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+                            <a href="{{ route('admin.laporan.show', $item->id) }}"
+                               class="btn-ghost"
+                               style="text-decoration: none; font-size: 12px;">
+                                Lihat Detail →
+                            </a>
+
+                            <form action="{{ route('admin.laporan.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus laporan ini?')" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-ghost" style="color: #d9534f; border-color: rgba(217, 83, 79, 0.3);">
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty

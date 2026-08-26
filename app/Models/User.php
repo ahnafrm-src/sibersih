@@ -22,7 +22,19 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // Tambahkan role agar bisa membedakan Admin, Guru, dll.
     ];
+
+    // Relasi balik ke model Kelas (Guru membina satu Kelas)
+    public function kelasBinaan()
+    {
+        return $this->hasOne(Kelas::class, 'wali_kelas_id');
+    }
+    // Relasi balik ke model Kelas
+    public function kelasWali()
+    {
+        return $this->hasOne(Kelas::class, 'wali_kelas_id');
+    }
 
     // /**
     //  * The attributes that should be hidden for serialization.

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+ 
 use App\Models\Laporan;
 use App\Models\Ruangan;
 use App\Models\Kelas;
@@ -24,15 +24,20 @@ class LaporanController extends Controller
     public function store(Request $request, AutoAssignmentService $assignmentService)
     {
         $request->validate([
-            'ruangan_id' => 'required|exists:ruangan,id',
-            'foto'       => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'ruangan_id'     => 'required|exists:ruangan,id',
+            'foto'           => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'waktu_kejadian' => 'nullable|date',
         ]);
 
         // Upload foto ke storage (folder storage/app/public/laporan-foto)
         $path = $request->file('foto')->store('laporan-foto', 'public');
-        $waktuLapor = Carbon::now();
 
-        // Cari otomatis kelas yang menempati ruangan saat jam ini
+        // Gunakan waktu kejadian yang diinputkan user (atau waktu sekarang jika kosong)
+        $waktuLapor = $request->filled('waktu_kejadian') 
+            ? Carbon::parse($request->waktu_kejadian) 
+            : Carbon::now();
+
+        // Cari otomatis kelas yang menempati ruangan berdasarkan waktu kejadian
         $kelasTerdugaId = $assignmentService->assignKelas($request->ruangan_id, $waktuLapor);
 
         Laporan::create([
@@ -40,13 +45,18 @@ class LaporanController extends Controller
             'foto'             => $path,
             'waktu_lapor'      => $waktuLapor,
             'kelas_terduga_id' => $kelasTerdugaId,
-            'nama_pelapor'     => $request->nama_pelapor,   // ganti dari pelapor_id
+            'nama_pelapor'     => $request->nama_pelapor,
             'kelas_pelapor'    => $request->kelas_pelapor,
             'status'           => 'baru',
         ]);
 
-        return back()->with('success', 'Laporan berhasil terkirim! Terima kasih telah menjaga kebersihan.');
+        // Redirect ke halaman sukses
+        return redirect()->route('lapor.sukses');
     }
 
-    
-}
+    // Tampilkan halaman sukses lapor
+    public function sukses()
+    {
+        return view('lapor.sukses');
+    }
+} 

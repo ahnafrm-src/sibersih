@@ -7,11 +7,10 @@ use App\Http\Controllers\Admin\RuanganController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\JadwalPelajaranController;
 use App\Http\Controllers\Admin\SanggahanController;
+use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
-
-// Route::get('/', [LaporanController::class, 'create']);
-
+ 
 // ==========================================
 // 🌐 ROUTE PUBLIC (Siswa / Perwakilan Kelas)
 // ==========================================
@@ -19,9 +18,10 @@ use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
 // Form Submit Lapor Kebersihan oleh Siswa/Umum
 Route::get('/lapor', [LaporanController::class, 'create'])->name('lapor.create');
 Route::post('/lapor', [LaporanController::class, 'store'])->name('lapor.store');
+Route::get('/lapor/sukses', [LaporanController::class, 'sukses'])->name('lapor.sukses');
 
 // Submit Sanggahan oleh Siswa
-Route::post('/sanggahan', [SanggahanController::class, 'store'])->name('sanggahan.store');
+// Route::post('/sanggahan', [SanggahanController::class, 'store'])->name('sanggahan.store');
 
 
 // ==========================================
@@ -38,6 +38,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
+    // Data Guru / Wali Kelas
+    Route::resource('guru', GuruController::class)->only(['index', 'store', 'destroy']);
+
     // Kelas & Ruangan
     Route::resource('kelas', KelasController::class)->parameters(['kelas' => 'kelas']);
     Route::resource('ruangan', RuanganController::class);
@@ -53,9 +56,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::patch('/sanggahan/{sanggahan}/verifikasi', [SanggahanController::class, 'verifikasi'])->name('sanggahan.verifikasi');
 
     // Semua Laporan (Menu Admin untuk Kelola Laporan Masuk)
-    Route::get('/laporan', [AdminLaporanController::class, 'index'])->name('laporan.index');
-    Route::patch('/laporan/{laporan}/status', [AdminLaporanController::class, 'updateStatus'])->name('laporan.update-status');
-    Route::delete('/laporan/{laporan}', [AdminLaporanController::class, 'destroy'])->name('laporan.destroy');
-    Route::get('/laporan/{laporan}', [AdminLaporanController::class, 'show'])->name('laporan.show');
+    Route::get('/laporan', [AdminLaporanController::class, 'index'])->name('laporan.index'); 
+    Route::get('/laporan/{laporan}', [AdminLaporanController::class, 'show'])->name('laporan.show'); 
+    Route::patch('/laporan/{laporan}/status', [AdminLaporanController::class, 'updateStatus'])->name('laporan.update-status'); 
     Route::patch('/laporan/{laporan}/koreksi-kelas', [AdminLaporanController::class, 'koreksiKelas'])->name('laporan.koreksi-kelas');
-});
+    Route::delete('/laporan/{laporan}', [AdminLaporanController::class, 'destroy'])->name('laporan.destroy');
+}); 

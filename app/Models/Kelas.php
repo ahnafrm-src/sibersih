@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Kelas extends Model{
-    
+class Kelas extends Model
+{
     protected $table = "kelas";
-    protected $fillable = ['nama_kelas', 'tingkat'];
+    
+    // Tambahkan 'wali_kelas_id' ke dalam fillable tanpa menghapus 'tingkat'
+    protected $fillable = ['nama_kelas', 'tingkat', 'wali_kelas_id'];
 
     public function jadwalPelajaran()
     {
@@ -22,6 +24,12 @@ class Kelas extends Model{
     public function skorMingguan()
     {
         return $this->hasMany(SkorMingguan::class, 'kelas_id');
+    }
+
+    // Relasi baru ke User (Guru yang menjadi Wali Kelas)
+    public function waliKelas()
+    {
+        return $this->belongsTo(User::class, 'wali_kelas_id');
     }
 
     protected static function boot(): void
@@ -42,4 +50,4 @@ class Kelas extends Model{
             }
         });
     }
- }
+}

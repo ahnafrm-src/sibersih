@@ -106,9 +106,10 @@
             font-family: var(--sans);
         }
 
+        /* Grid 5 Kolom (Nama Kelas | Wali Kelas | Performa | Skor | Aksi) */
         .table-header {
             display: grid;
-            grid-template-columns: 140px 1fr 60px 100px;
+            grid-template-columns: 120px 160px 1fr 60px 100px;
             gap: 12px;
             padding-bottom: 10px;
             border-bottom: 1px solid var(--line);
@@ -129,7 +130,7 @@
 
         .view-mode-grid {
             display: grid;
-            grid-template-columns: 140px 1fr 60px 100px;
+            grid-template-columns: 120px 160px 1fr 60px 100px;
             gap: 12px;
             align-items: center;
             font-size: 13px;
@@ -138,6 +139,18 @@
         .cls-name {
             font-weight: 600;
             font-size: 14px;
+        }
+
+        .teacher-name {
+            color: var(--green);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .teacher-empty {
+            color: var(--ink-soft);
+            font-style: italic;
+            font-size: 12px;
         }
 
         /* Skor Bar */
@@ -159,6 +172,7 @@
             background: var(--green);
             height: 100%;
             border-radius: 6px;
+            width: var(--w, 0%);
         }
 
         .score-bar-fill.warning {
@@ -195,7 +209,7 @@
 
         .row-item.is-editing .edit-mode-grid {
             display: grid;
-            grid-template-columns: 140px 1fr 60px 100px;
+            grid-template-columns: 120px 160px 1fr 60px 100px;
             gap: 12px;
             align-items: center;
         }
@@ -243,7 +257,7 @@
     </div>
 
     <div class="grid-split">
-        <!-- Input Form -->
+        <!-- Input Form Tambah Kelas -->
         <div>
             <div class="section-label">Tambah Kelas</div>
             <div class="panel">
@@ -254,17 +268,29 @@
                         <p class="field-label">Nama Kelas</p>
                         <input type="text" name="nama_kelas" class="input-style" placeholder="Contoh: X RPL 1" required>
                     </div>
+
+                    <div class="form-group">
+                        <p class="field-label">Wali Kelas</p>
+                        <select name="wali_kelas_id" class="input-style">
+                            <option value="">-- Pilih Wali Kelas --</option>
+                            @foreach($gurus as $guru)
+                                <option value="{{ $guru->id }}">{{ $guru->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <button type="submit" class="btn-primary" style="width:100%; margin-top:8px;">Simpan Kelas</button>
                 </form>
             </div>
         </div>
 
-        <!-- Daftar Kelas -->
+        <!-- Daftar Kelas Aktif -->
         <div>
             <div class="section-label">Daftar Kelas Aktif</div>
             <div class="panel">
                 <div class="table-header">
                     <div>Nama Kelas</div>
+                    <div>Wali Kelas</div>
                     <div>Performa Kebersihan</div>
                     <div style="text-align:right;">Skor</div>
                     <div style="text-align:right;">Aksi</div>
@@ -275,7 +301,6 @@
                         $skorTerbaru = $kelas->skorMingguan->sortByDesc('created_at')->first();
                         $nilaiSkor = $skorTerbaru->skor ?? null;
 
-                        // Penyiapan data CSS & Nilai agar aman dari Linter VS Code
                         $widthPercent = is_null($nilaiSkor) ? 0 : $nilaiSkor;
                         $scoreClass = '';
                         if (!is_null($nilaiSkor)) {
@@ -291,6 +316,13 @@
                         <!-- ===== VIEW MODE ===== -->
                         <div class="view-mode-grid">
                             <div class="cls-name">{{ $kelas->nama_kelas }}</div>
+                            <div>
+                                @if($kelas->waliKelas)
+                                    <span class="teacher-name">{{ $kelas->waliKelas->name }}</span>
+                                @else
+                                    <span class="teacher-empty">Belum ada</span>
+                                @endif
+                            </div>
                             <div class="score-container">
                                 <div class="score-bar-bg">
                                     <div class="score-bar-fill {{ $scoreClass }}" style="--w: {{ $widthPercent }}%"></div>
@@ -321,6 +353,17 @@
                             <div>
                                 <input type="text" name="nama_kelas" class="edit-input" value="{{ $kelas->nama_kelas }}" required>
                             </div>
+                            <div>
+                                <select name="wali_kelas_id" class="edit-input">
+                                    <option value="">-- Pilih Wali Kelas --</option>
+                                    @if($kelas->waliKelas)
+                                        <option value="{{ $kelas->waliKelas->id }}" selected>{{ $kelas->waliKelas->name }} (Saat ini)</option>
+                                    @endif
+                                    @foreach($gurus as $guru)
+                                        <option value="{{ $guru->id }}">{{ $guru->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div></div>
                             <div></div>
                             <div style="display:flex; gap:8px; justify-content:flex-end;">
@@ -345,4 +388,4 @@
             }
         }
     </script>
- @endsection
+@endsection

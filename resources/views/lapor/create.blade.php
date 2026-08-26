@@ -53,8 +53,8 @@
         /* Tombol kamera khusus HP */
         .camera-btn { display: none; width: 100%; margin-top: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink-soft); font-size: 13px; font-family: var(--sans); cursor: pointer; text-align: center; }
 
-        select, input[type="text"] { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; font-family: var(--sans); color: var(--ink); background: #FBFAF7; appearance: none; -webkit-appearance: none; outline: none; transition: border-color 0.2s; }
-        select:focus, input[type="text"]:focus { border-color: var(--green); }
+        select, input[type="text"], input[type="datetime-local"] { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; font-family: var(--sans); color: var(--ink); background: #FBFAF7; appearance: none; -webkit-appearance: none; outline: none; transition: border-color 0.2s; }
+        select:focus, input[type="text"]:focus, input[type="datetime-local"]:focus { border-color: var(--green); }
         .select-wrap { position: relative; }
         .select-wrap::after { content: '▾'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--ink-soft); pointer-events: none; font-size: 12px; }
         textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; font-family: var(--sans); color: var(--ink); background: #FBFAF7; resize: none; outline: none; transition: border-color 0.2s; }
@@ -62,9 +62,7 @@
 
         .divider { border: none; border-top: 1px solid var(--line); margin: 4px 0 20px; }
 
-        .waktu-info { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-soft); font-family: var(--mono); margin-bottom: 20px; }
-        .waktu-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
-
+    
         .btn-submit { width: 100%; padding: 13px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--sans); transition: opacity 0.2s; }
         .btn-submit:hover { opacity: 0.88; }
     </style>
@@ -107,15 +105,15 @@
                     <div class="photo-icon" id="photoIcon">📷</div>
                     <div class="photo-zone-label" id="photoZoneLabel">Ambil atau unggah foto</div>
                     <div class="photo-zone-sub" id="photoZoneSub">Drag &amp; drop · klik untuk pilih file</div>
-                    {{-- input ini menangkap klik area zona (laptop: file picker biasa) --}}
+
                     <input class="photo-input" type="file" name="foto" accept="image/*" id="fotoInput" required>
                 </div>
-                {{-- tombol ini hanya muncul di HP, membuka kamera langsung --}}
+
                 <button type="button" class="camera-btn" id="cameraBtnMobile"
                     onclick="document.getElementById('cameraInput').click()">
                     📷 Buka kamera
                 </button>
-                {{-- input kedua khusus HP: capture=environment = kamera belakang --}}
+
                 <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display:none">
                 <p class="field-hint">JPG / PNG · maks. 2 MB</p>
                 @error('foto') <p class="field-error">{{ $message }}</p> @enderror
@@ -123,7 +121,7 @@
 
             <hr class="divider">
 
-            {{-- Nama pelapor (opsional, disimpan sebagai nama_pelapor) --}}
+            {{-- Nama pelapor --}}
             <div class="field-group">
                 <label class="field-label" for="nama_pelapor">Nama kamu (opsional)</label>
                 <input type="text" name="nama_pelapor" id="nama_pelapor"
@@ -131,7 +129,7 @@
                     value="{{ old('nama_pelapor') }}">
             </div>
 
-            {{-- Kelas pelapor (opsional, disimpan sebagai kelas_pelapor) --}}
+            {{-- Kelas pelapor --}}
             <div class="field-group">
                 <label class="field-label" for="kelas_pelapor">Kelas kamu (opsional)</label>
                 <div class="select-wrap">
@@ -164,20 +162,22 @@
                 @error('ruangan_id') <p class="field-error">{{ $message }}</p> @enderror
             </div>
 
+            {{-- Waktu Kejadian (Manual Input) --}}
+            <div class="field-group">
+                <label class="field-label" for="waktu_kejadian">Waktu Kejadian</label>
+                <input type="datetime-local" name="waktu_kejadian" id="waktu_kejadian" 
+                    value="{{ old('waktu_kejadian', now()->format('Y-m-d\TH:i')) }}">
+                <p class="field-hint">Ubah jika melaporkan kejadian di jam yang lalu.</p>
+                @error('waktu_kejadian') <p class="field-error">{{ $message }}</p> @enderror
+            </div>
+
             {{-- Catatan opsional --}}
             <div class="field-group">
                 <label class="field-label" for="catatan">Catatan (opsional)</label>
                 <textarea name="catatan" id="catatan" rows="2"
                     placeholder="cth. Sisa buah di dekat meja guru">{{ old('catatan') }}</textarea>
             </div>
-
-            {{-- Waktu live --}}
-            <div class="waktu-info">
-                <span class="waktu-dot"></span>
-                <span id="waktuDisplay">—</span>
-                <span style="opacity:0.6">· waktu tercatat otomatis</span>
-            </div>
-
+ 
             <button type="submit" class="btn-submit">Kirim laporan</button>
         </form>
     </div>
@@ -185,13 +185,13 @@
     <script>
         const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
 
-        // Kalau HP: tampilkan tombol kamera, ubah teks zona
+
         if (isMobile) {
             document.getElementById('cameraBtnMobile').style.display = 'block';
             document.getElementById('photoZoneSub').textContent = 'Ketuk untuk pilih dari galeri';
         }
 
-        // Fungsi set preview setelah file dipilih
+
         function setPreview(file) {
             if (!file) return;
             const zone    = document.getElementById('photoZone');
@@ -212,25 +212,22 @@
             reader.readAsDataURL(file);
         }
 
-        // Input zona (laptop: drag/pilih file)
+
         document.getElementById('fotoInput').addEventListener('change', e => {
             setPreview(e.target.files[0]);
         });
 
-        // Input kamera (HP: capture langsung)
-        // Kalau user pilih dari kamera HP, transfer file-nya ke fotoInput
-        // supaya tetap ikut tersubmit ke form
+
         document.getElementById('cameraInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
-            // Transfer ke fotoInput pakai DataTransfer
+
             const dt = new DataTransfer();
             dt.items.add(file);
             document.getElementById('fotoInput').files = dt.files;
             setPreview(file);
         });
-
-        // Drag & drop (laptop)
+        
         const zone = document.getElementById('photoZone');
         zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
         zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
@@ -246,16 +243,7 @@
             }
         });
 
-        // Jam live
-        function tick() {
-            const now  = new Date();
-            const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][now.getDay()];
-            const bln  = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][now.getMonth()];
-            const jam  = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-            document.getElementById('waktuDisplay').textContent = hari + ', ' + now.getDate() + ' ' + bln + ' · ' + jam;
-        }
-        tick();
-        setInterval(tick, 10000);
+    
     </script>
 @RegisterServiceWorkerScript
 

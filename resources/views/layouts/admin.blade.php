@@ -4,12 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>@yield('title', 'SI-BERSIH')- SI-BERSIH</title>
+  <title>@yield('title', 'SI-BERSIH') - SI-BERSIH</title>
   <link rel="preconnect" href="https://googleapis.com">
   <link href="https://googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* {{-- semua CSS kamu taruh di sini, tidak perlu diulang di tiap halaman --}} */
-
     :root {
       --bg: #EEF2ED;
       --card: #FFFFFF;
@@ -121,7 +119,7 @@
     /* Area Konten Utama */
     .main-content {
       margin-left: 260px;
-      flex-1: 1;
+      flex: 1;
       width: calc(100% - 260px);
       padding: 40px 48px;
     }
@@ -376,6 +374,10 @@
       </a>
       <a href="{{ route('admin.kelas.index') }}" class="nav-item {{ request()->routeIs('admin.kelas.*') ? 'active' : '' }}">
         <span class="icon">▤</span> Data Kelas
+      </a>
+      {{-- Menu Baru: Data Guru --}}
+      <a href="{{ route('admin.guru.index') }}" class="nav-item {{ request()->routeIs('admin.guru.*') ? 'active' : '' }}">
+        <span class="icon">🎓</span> Data Guru
       </a>
       <a href="{{ route('admin.ruangan.index') }}" class="nav-item {{ request()->routeIs('admin.ruangan.*') ? 'active' : '' }}">
         <span class="icon">☖</span> Data Ruangan
