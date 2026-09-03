@@ -102,4 +102,54 @@
             </div>
         @endforelse
     </div>
+
+    <div class="section-label">Leaderboard</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+
+        {{-- Kelas Paling Kotor --}}
+        <div class="panel">
+            <h3>🏴 Kelas Paling Kotor</h3>
+            @forelse($kelasTermalas as $index => $item)
+                <div
+                    style="display:flex; align-items:center; gap:12px; padding: 10px 0; border-top: 1px solid var(--line);">
+                    <div style="font-family:var(--mono); font-size:13px; color:var(--ink-soft); width:20px;">
+                        {{ $index + 1 }}
+                    </div>
+                    <div style="flex:1; font-size:13px; font-weight:500;">
+                        {{ $item->kelasTerduga->nama_kelas ?? '-' }}
+                    </div>
+                    <div style="font-family:var(--mono); font-size:12px; color:var(--rust);">
+                        {{ $item->total }}x laporan
+                    </div>
+                </div>
+            @empty
+                <p style="font-size:13px; color:var(--ink-soft); padding-top:12px;">Belum ada data.</p>
+            @endforelse
+        </div>
+
+        {{-- Pelapor Paling Rajin --}}
+        <div class="panel">
+            <h3>🏆 Pelapor Paling Rajin</h3>
+            @forelse($pelaporRajin as $index => $item)
+                <div
+                    style="display:flex; align-items:center; gap:12px; padding: 10px 0; border-top: 1px solid var(--line);">
+                    <div style="font-family:var(--mono); font-size:13px; color:var(--ink-soft); width:20px;">
+                        {{ $index + 1 }}
+                    </div>
+                    <div style="flex:1; font-size:13px; font-weight:500;">
+                        {{ $item->nama_pelapor }}
+                        <span style="font-size:11px; color:var(--ink-soft); font-weight:400;">
+                            · {{ $item->kelas_pelapor }}
+                        </span>
+                    </div>
+                    <div style="font-family:var(--mono); font-size:12px; color:var(--green);">
+                        {{ $item->total }}x lapor
+                    </div>
+                </div>
+            @empty
+                <p style="font-size:13px; color:var(--ink-soft); padding-top:12px;">Belum ada data.</p>
+            @endforelse
+        </div>
+
+    </div>
 @endsection

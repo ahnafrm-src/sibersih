@@ -21,6 +21,27 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('admin.dashboard', compact('ruangan', 'laporanTerbaru'));
+        // Top 5 kelas paling kotor (paling banyak dapat laporan)
+        $kelasTermalas = Laporan::selectRaw('kelas_terduga_id, COUNT(*) as total')
+            ->whereNotNull('kelas_terduga_id')
+            ->groupBy('kelas_terduga_id')
+            ->orderByDesc('total')
+            ->take(5)
+            ->with('kelasTerduga')
+            ->get();
+
+        // Top 5 pelapor paling rajin
+        $pelaporRajin = Laporan::selectRaw('nama_pelapor, kelas_pelapor, COUNT(*) as total')
+            ->groupBy('nama_pelapor', 'kelas_pelapor')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'ruangan',
+            'laporanTerbaru',
+            'kelasTermalas',
+            'pelaporRajin'
+        ));
     }
 }
