@@ -42,7 +42,7 @@ class LaporanController extends Controller
     public function destroy(Laporan $laporan)
     {
         $laporan->delete();
-        return back()->with('success', 'Laporan berhasil dihapus.');
+        return redirect()->route('admin.laporan.index')->with('success', 'Laporan berhasil dihapus!');
     }
 
     /**

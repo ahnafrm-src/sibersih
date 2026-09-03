@@ -20,11 +20,11 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'nip',
         'email',
         'password',
-        'role', // Tambahkan role agar bisa membedakan Admin, Guru, dll.
+        'role',
     ];
-
     // Relasi balik ke model Kelas (Guru membina satu Kelas)
     public function kelasBinaan()
     {

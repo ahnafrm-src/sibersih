@@ -20,19 +20,18 @@ class GuruController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'name' => 'required|string|max:255',
+            'nip'  => 'required|numeric|unique:users,nip',
         ]);
 
-        // Simpan data guru dengan password acak otomatis di belakang layar
-        User::create([
+        User::create([ 
             'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make(Str::random(16)), // Password otomatis terisi agar database aman
+            'nip'      => $request->nip,
+            'password' => bcrypt('password123'), // Password default jika diperlukan
             'role'     => 'guru',
         ]);
 
-        return back()->with('success', 'Data Guru berhasil ditambahkan!');
+        return back()->with('success', 'Data guru berhasil ditambahkan!');
     }
 
     public function destroy($id)
