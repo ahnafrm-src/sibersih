@@ -8,23 +8,27 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            // Jika kolom email belum ada / berganti nama sebelumnya
-            if (!Schema::hasColumn('users', 'email')) {
+        // 1. Rename 'nip' kembali ke 'email' jika sebelumnya sempat di-rename
+        if (!Schema::hasColumn('users', 'email') && Schema::hasColumn('users', 'nip')) {
+            Schema::table('users', function (Blueprint $table) {
                 $table->renameColumn('nip', 'email');
-            }
-            
-            // Tambahkan kolom nip (nullable karena admin tidak wajib punya NIP)
-            if (!Schema::hasColumn('users', 'nip')) {
+            });
+        }
+
+        // 2. Tambahkan kolom 'nip' baru
+        if (!Schema::hasColumn('users', 'nip')) {
+            Schema::table('users', function (Blueprint $table) {
                 $table->string('nip')->nullable()->unique()->after('name');
-            }
-        });
+            });
+        }
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('nip');
+            if (Schema::hasColumn('users', 'nip')) {
+                $table->dropColumn('nip');
+            }
         });
     }
-};
+};  

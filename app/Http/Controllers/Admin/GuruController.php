@@ -27,6 +27,7 @@ class GuruController extends Controller
         User::create([ 
             'name'     => $request->name,
             'nip'      => $request->nip,
+            'email'    => $request->nip . '@gmail.com', // Email default jika diperlukan,
             'password' => bcrypt('password123'), // Password default jika diperlukan
             'role'     => 'guru',
         ]);
