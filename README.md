@@ -1,59 +1,168 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SI-BERSIH
+**Sistem Monitoring & Akuntabilitas Kebersihan Pasca-MBG**
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web internal untuk memantau kebersihan ruang kelas dan menghasilkan akuntabilitas kebersihan per kelas di sekolah. Dibangun sebagai proyek UKK (Ujian Kompetensi Keahlian) program RPL/PPLG.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Latar Belakang
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Berdasarkan wawancara dengan petugas kebersihan sekolah, masalah utama yang teridentifikasi adalah siswa yang membuang sampah sembarangan — khususnya saat program MBG (Makan Bergizi Gratis). Akar masalahnya: karena siswa berpindah ruangan setiap pergantian jam, tidak ada pihak yang merasa bertanggung jawab atas kebersihan satu ruangan tertentu, sehingga seluruh beban jatuh ke petugas kebersihan.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+SI-BERSIH hadir untuk mengembalikan rasa tanggung jawab itu ke kelas yang sedang menempati suatu ruangan — berdasarkan data jadwal pelajaran.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Fitur Utama
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Lapor titik kotor** — siapapun (tanpa akun) bisa submit laporan kebersihan dengan foto, nama, dan pilihan ruangan
+- **Auto-assignment kelas** — sistem otomatis menentukan kelas penanggung jawab berdasarkan ruangan + waktu laporan yang dicocokkan ke jadwal pelajaran
+- **Dashboard admin** — ringkasan laporan harian, papan status ruangan, leaderboard kelas paling kotor & pelapor paling aktif
+- **Kelola laporan** — admin dapat mengubah status laporan (`baru` → `ditindak` → `selesai`) dan melakukan koreksi kelas manual
+- **Manajemen jadwal pelajaran** — CRUD jadwal per ruangan, kelas, hari, dan jam
+- **Rekap skor mingguan** — poin kebersihan per kelas berbasis laporan terverifikasi
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Tech Stack
 
-### Premium Partners
+| Layer | Teknologi |
+|---|---|
+| Backend | Laravel 11 |
+| Frontend | Blade Templating |
+| Database | MySQL |
+| ORM | Eloquent |
+| Auth | Session-based (custom `AuthController`) |
+| PWA | `erag/laravel-pwa` |
+| Fonts | IBM Plex Sans, IBM Plex Mono |
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## Struktur Database
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Tujuh tabel utama:
 
-## Code of Conduct
+| Tabel | Fungsi |
+|---|---|
+| `users` | Akun `admin` dan `guru` |
+| `kelas` | Data kelas (dengan kolom `tingkat`: 10/11/12) |
+| `ruangan` | Data ruangan |
+| `jadwal_pelajaran` | Slot jadwal per ruangan, kelas, hari, dan jam |
+| `laporan` | Laporan kebersihan beserta status dan kelas terduga |
+| `sanggahan` | (Vestigial — fitur sanggahan digantikan koreksi manual admin) |
+| `skor_mingguan` | Snapshot skor kebersihan mingguan per kelas |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Instalasi & Setup
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Prasyarat
+- PHP 8.2+
+- Composer
+- MySQL
+- Node.js & npm
 
-## License
+### Langkah-langkah
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+# 1. Clone repo
+git clone https://github.com/<username>/si-bersih.git
+cd si-bersih
+
+# 2. Install dependencies
+composer install
+npm install && npm run build
+
+# 3. Salin dan konfigurasi environment
+cp .env.example .env
+php artisan key:generate
+
+# 4. Atur koneksi database di .env
+# DB_DATABASE=sibersih
+# DB_USERNAME=root
+# DB_PASSWORD=
+# APP_TIMEZONE=Asia/Jakarta
+
+# 5. Jalankan migrasi dan seeder
+php artisan migrate --seed
+
+# 6. Buat symlink storage
+php artisan storage:link
+
+# 7. Jalankan server
+php artisan serve
+```
+
+---
+
+## Akun Default (Seeder)
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | admin@sibersih.sch | password |
+| Guru | guru@sibersih.sch | password |
+
+> Laporan dapat disubmit secara publik tanpa login melalui `/lapor`.
+
+---
+
+## Struktur Folder Penting
+
+```
+app/
+├── Http/Controllers/
+│   ├── AuthController.php
+│   ├── DashboardController.php
+│   ├── LaporanController.php
+│   ├── JadwalPelajaranController.php
+│   └── SkorMingguanController.php
+├── Models/
+│   ├── Kelas.php
+│   ├── Ruangan.php
+│   ├── JadwalPelajaran.php
+│   ├── Laporan.php
+│   └── SkorMingguan.php
+└── Services/
+    └── AutoAssignmentService.php
+
+resources/views/
+├── layouts/app.blade.php
+├── dashboard.blade.php
+├── lapor/
+├── laporan/
+├── jadwal/
+└── skor/
+```
+
+---
+
+## Alur Sistem
+
+```
+Pelapor mengisi form lapor (foto + ruangan + nama + kelas)
+        ↓
+AutoAssignmentService mencocokkan ruangan_id + waktu → jadwal_pelajaran
+        ↓
+kelas_terduga_id terisi otomatis di tabel laporan
+        ↓
+Admin mereview laporan di dashboard
+        ↓
+Admin mengubah status / koreksi kelas manual jika perlu
+        ↓
+Skor mingguan kelas diperbarui berdasarkan laporan berstatus selesai/ditindak
+```
+
+---
+
+## Catatan Pengembangan
+
+- Petugas kebersihan **tidak memiliki akun** di sistem — berdasarkan temuan wawancara
+- Tidak ada auto-eskalasi bertimer — status diperbarui manual oleh admin/guru
+- Tidak ada notifikasi otomatis (WA/Telegram) di tahap MVP ini
+- Timezone wajib diset ke `Asia/Jakarta` di `config/app.php` agar auto-assignment berbasis jam berjalan benar
+
+---
+
+## Lisensi
+
+Proyek ini dibuat untuk keperluan pendidikan (UKK SMK). Tidak untuk penggunaan komersial.
